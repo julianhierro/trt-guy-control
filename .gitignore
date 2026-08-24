@@ -1,0 +1,4 @@
+node_modules
+.netlify
+.vercel
+.DS_Store
