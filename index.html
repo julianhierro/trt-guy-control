@@ -113,6 +113,7 @@
   .btn:hover{background:var(--accent-2);border-color:var(--accent-2)}
   .btn.ghost{background:transparent;color:#fff;border-color:var(--line-bright)}
   .btn.ghost:hover{background:#fff;color:#000;border-color:#fff}
+  .btn.copy.copied{background:var(--accent);color:#fff;border-color:var(--accent)}
 
   /* editor overlay */
   .overlay{position:fixed;inset:0;background:#000;z-index:40;display:none;flex-direction:column}
@@ -469,6 +470,7 @@
       + '<div class="actions">'
         + '<button type="button" class="btn" data-open="' + pr.id + '">Open \u2192</button>'
         + '<a class="btn ghost" href="' + pr.home + '" target="_blank" rel="noopener">View live</a>'
+        + '<button type="button" class="btn ghost copy" data-copy="' + pr.home + '" title="Copy this funnel\u2019s link">Copy link \u29c9</button>'
       + '</div></div>';
   }
 
@@ -515,6 +517,7 @@
         + '<div class="actions">'
           + '<button type="button" class="btn" data-idx="' + i + '">Edit ↗</button>'
           + '<a class="btn ghost" href="' + p.url + '" target="_blank" rel="noopener">View live</a>'
+          + '<button type="button" class="btn ghost copy" data-copy="' + p.url + '" title="Copy this page\u2019s link">Copy link ⧉</button>'
           + (p.pdf ? '<a class="btn ghost" href="' + p.pdf + '" download>Download PDF ↓</a>' : '')
         + '</div></div>';
     }).join('');
@@ -608,6 +611,25 @@
     if (p) showProject(p[1], true);
     else if (g) showGroup(g[1], true);
     else { openProject = null; openGroup = null; renderFolders(); }
+  });
+
+  // copy a page URL straight to the clipboard — no need to open it first
+  document.addEventListener('click', function(e){
+    var b = e.target.closest('.btn.copy'); if (!b) return;
+    e.preventDefault(); e.stopPropagation();
+    var url = b.dataset.copy, old = b.textContent;
+    var done = function(ok){
+      b.textContent = ok ? 'Copied \u2713' : 'Press \u2318C';
+      b.classList.add('copied');
+      setTimeout(function(){ b.textContent = old; b.classList.remove('copied'); }, 1200);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(function(){ done(true); }, function(){ done(false); });
+    } else {
+      var ta = document.createElement('textarea'); ta.value = url; document.body.appendChild(ta);
+      ta.select(); var ok = false; try { ok = document.execCommand('copy'); } catch (x) {}
+      document.body.removeChild(ta); done(ok);
+    }
   });
 
   // copy a tag with one click, ready to paste into a GHL contact search
