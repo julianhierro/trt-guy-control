@@ -224,48 +224,75 @@
       ]
     },
     {
-      id:'quiz', icon:'🩺', tag:'Lead Magnet', name:'Low-T Quiz',
+      id:'quiz', group:'magnets', icon:'🩺', tag:'Lead Magnet', name:'Low-T Quiz',
       description:'The 10-question ADAM screen. Email captured before the result.',
       home:'https://trt-guy-quiz.vercel.app/',
       pages:[
-        { kind:'gate', key:'trtdad-quiz', tags:["trt-dad", "adam-quiz", "low-t-positive / low-t-negative", "bloodwork-interested"], name:'Quiz',
-          description:'Questions, email gate, then the result and the bloodwork panel.',
+        { kind:'gate', key:'trtdad-quiz', tags:["trt-dad", "adam-quiz", "low-t-positive / low-t-negative", "bloodwork-interested"], name:'Opt-In Page',
+          description:'Questions, then the email gate.',
+          url:'https://trt-guy-quiz.vercel.app/' },
+        { kind:'thanks', key:'trtdad-quiz', tags:[], name:'Result Page (thank you)',
+          description:'The result and the bloodwork panel show on the same page right after the gate — that screen is this funnel\'s thank-you step.',
           url:'https://trt-guy-quiz.vercel.app/' }
       ]
     },
     {
-      id:'injection', icon:'💉', tag:'Lead Magnet', name:'TRT Injection Guide',
+      id:'injection', group:'magnets', icon:'💉', tag:'Lead Magnet', name:'TRT Injection Guide',
       description:'Opt-in page, then the 17-page guide and the dose calculator.',
       home:'https://trt-guy-injection-guide.vercel.app/',
       pages:[
         { kind:'gate',  key:'trtdad-injection-gate', tags:["trt-dad", "injection-guide", "trt-interested"], name:'Opt-In Page',
           description:'Headline + email for the injection guide.',
           url:'https://trt-guy-injection-guide.vercel.app/' },
-        { kind:'asset', key:'trtdad-injection-guide', tags:["trt-dad", "30-emails-30-days"], name:'Guide + Calculator',
+        { kind:'thanks', key:'trtdad-injection-thanks', tags:[], name:'Thank You Page',
+          description:'Find the email, move it to the main inbox, hit reply. Links straight to the guide.',
+          url:'https://trt-guy-injection-guide.vercel.app/thanks.html' },
+        { kind:'asset', key:'trtdad-injection-guide', tags:["trt-dad", "injection-guide"], name:'Guide + Calculator',
           description:'PDF download, the full guide on the page, and the dose calculator.',
+          pdf:'https://trt-guy-injection-guide.vercel.app/Hero-Dad-Complete-TRT-Injection-Guide.pdf',
           url:'https://trt-guy-injection-guide.vercel.app/guide.html' }
       ]
     },
     {
-      id:'rules', icon:'📋', tag:'Lead Magnet', name:'5 TRT Non-Negotiables',
+      id:'guide101', group:'magnets', icon:'📘', tag:'Lead Magnet', name:'The TRT 101 Guide',
+      description:'Opt-in page, then the 17-page guide and the PDF download.',
+      home:'https://trt-guy-101-guide.vercel.app/',
+      pages:[
+        { kind:'gate',  key:'trtdad-101-gate', tags:["trt-dad", "trt-101-guide", "trt-interested"], name:'Opt-In Page',
+          description:'First name + email. Tags trt-101-guide in GHL.',
+          url:'https://trt-guy-101-guide.vercel.app/get' },
+        { kind:'thanks', key:'trtdad-101-thanks', tags:[], name:'Thank You Page',
+          description:'Find the email, move it to the main inbox, hit reply. Plus a direct PDF download.',
+          url:'https://trt-guy-101-guide.vercel.app/thanks' },
+        { kind:'asset', key:'trtdad-101-guide', tags:["trt-dad", "trt-101-guide"], name:'The TRT 101 Guide (PDF)',
+          description:'The full 17-page guide. Edit it here, then download the PDF \u2014 \u2318K adds links.',
+          pdf:'https://trt-guy-101-guide.vercel.app/TRT-Guy-TRT-101-Guide.pdf',
+          url:'https://trt-guy-101-guide.vercel.app/' }
+      ]
+    },
+    {
+      id:'rules', group:'magnets', icon:'📋', tag:'Lead Magnet', name:'5 TRT Non-Negotiables',
       description:'Single opt-in page. The guide itself goes out by email.',
       home:'https://trt-guy-trt-rules.vercel.app/',
       pages:[
         { kind:'gate', key:'trtdad-rules-gate', tags:["trt-dad", "trt-non-negotiables", "trt-interested"], name:'Opt-In Page',
           description:'Your headline, your copy, and the form.',
-          url:'https://trt-guy-trt-rules.vercel.app/' }
+          url:'https://trt-guy-trt-rules.vercel.app/' },
+        { kind:'thanks', key:'trtdad-rules-thanks', tags:[], name:'Thank You Page',
+          description:'Find the email, move it to the main inbox, hit reply.',
+          url:'https://trt-guy-trt-rules.vercel.app/thanks.html' }
       ]
     },
     {
-      id:'course', icon:'✉️', tag:'Email Course', name:'30 Emails In 30 Days',
+      id:'course', group:'magnets', icon:'✉️', tag:'Email Course', name:'30 Emails In 30 Days',
       description:'Opt-in page and the confirmation page for the free daily email course.',
       home:'https://trt-guy-30-days.vercel.app/',
       pages:[
         { kind:'gate', key:'trtdad-30days', tags:["trt-dad", "30-emails-30-days"], name:'Opt-In Page',
           description:'Copy kept word for word from the original GoHighLevel page.',
           url:'https://trt-guy-30-days.vercel.app/' },
-        { kind:'asset', key:'trtdad-30days-confirm', tags:[], name:'Confirmation Page',
-          description:'Where they land after signing up — whitelist me, hit reply, or the emails go to spam.',
+        { kind:'thanks', key:'trtdad-30days-confirm', tags:[], name:'Thank You Page',
+          description:'Find email #1, move it to the main inbox, hit reply — or the rest go to spam.',
           url:'https://trt-guy-30-days.vercel.app/confirmation.html' }
       ]
     },
@@ -283,6 +310,16 @@
       ]
     }
   ];
+
+  /* ── Top level is a GROUP. "Lead Magnets" holds every magnet as its own
+        subfolder; open one and you get its pages (opt-in, thank you, asset).
+        A project with no group sits at the top level on its own. ── */
+  const GROUPS = [
+    { id:'magnets', icon:'🧲', tag:'Folder', name:'Lead Magnets',
+      description:'Every free thing you give away. Each one opens into its own opt-in page and thank-you page.' }
+  ];
+  const groupOf = pr => pr.group ? GROUPS.find(g => g.id === pr.group) : null;
+  const inGroup = gid => PROJECTS.filter(pr => pr.group === gid);
 
   const ALL = [];
   PROJECTS.forEach(pr => pr.pages.forEach(p => { p.project = pr; ALL.push(p); }));
@@ -310,7 +347,7 @@
 
   /* ── stats ── */
   const STATS = 'https://jv-dashboard-chi.vercel.app/api/pagestats';
-  let rangeDays = 7, statsByKey = {}, openProject = null;
+  let rangeDays = 7, statsByKey = {}, openProject = null, openGroup = null;
 
   const ymd = d => d.toISOString().slice(0,10);
   const rangeQS = () => {
@@ -330,6 +367,16 @@
       (p.tags || []).forEach(function(t){ if (!seen[t]) { seen[t] = 1; out.push(t); } });
     });
     return out;
+  }
+
+  function rollupGroup(g){
+    let views=0, visitors=0, optins=0, gateVis=0;
+    inGroup(g.id).forEach(pr => pr.pages.forEach(p => {
+      const s = st(p.key);
+      views += s.views; visitors += s.visitors;
+      if (p.kind === 'gate') { optins += s.optins; gateVis += s.visitors; }
+    }));
+    return { views, visitors, optins, cv: gateVis ? (optins/gateVis)*100 : null };
   }
 
   function rollup(pr){
@@ -374,57 +421,101 @@
 
   function renderFolders(){
     document.getElementById('title').textContent = 'Your projects';
-    document.getElementById('subtitle').textContent = 'Each funnel and its pages, with what they’re converting at.';
+    document.getElementById('subtitle').textContent = 'Each funnel and its pages, with what they\u2019re converting at.';
     document.getElementById('crumbSlot').innerHTML = '';
-    document.getElementById('grid').innerHTML = PROJECTS.map(pr => {
-      const r = rollup(pr);
-      return '<div class="card folder" data-project="' + pr.id + '">'
-        + '<div class="cardtop"><span class="tag">' + pr.tag + '</span>'
-          + '<span class="count">' + pr.pages.length + (pr.pages.length > 1 ? ' pages' : ' page') + '</span></div>'
-        + '<div class="name"><span>' + pr.icon + '</span>' + pr.name + '</div>'
-        + '<p class="desc">' + pr.description + '</p>'
+
+    const groupCards = GROUPS.map(g => {
+      const r = rollupGroup(g), kids = inGroup(g.id);
+      return '<div class="card folder" data-group="' + g.id + '">'
+        + '<div class="cardtop"><span class="tag">' + g.tag + '</span>'
+          + '<span class="count">' + kids.length + ' magnets</span></div>'
+        + '<div class="name"><span>' + g.icon + '</span>' + g.name + '</div>'
+        + '<p class="desc">' + g.description + '</p>'
         + convBlock(r.cv, 'Conversion')
         + '<div class="micro"><span><b>' + n(r.views) + '</b> views</span>'
           + '<span><b>' + n(r.visitors) + '</b> visitors</span>'
           + '<span><b>' + n(r.optins) + '</b> opt-ins</span></div>'
-        + tagBlock(projectTags(pr))
+        + '<div class="taghead">Inside</div><div class="tagrow">'
+          + kids.map(k => '<span class="tag-chip" data-noc="1">' + k.icon + ' ' + k.name + '</span>').join('')
+        + '</div>'
         + '<div class="actions">'
-          + '<button type="button" class="btn" data-open="' + pr.id + '">Open →</button>'
-          + '<a class="btn ghost" href="' + pr.home + '" target="_blank" rel="noopener">View live</a>'
+          + '<button type="button" class="btn" data-opengroup="' + g.id + '">Open \u2192</button>'
         + '</div></div>';
     }).join('');
 
-    document.querySelectorAll('.card.folder').forEach(c => {
-      c.addEventListener('click', e => {
-        if (e.target.closest('a')) return;
-        showProject(c.dataset.project);
-      });
+    document.getElementById('grid').innerHTML = groupCards
+      + PROJECTS.filter(pr => !pr.group).map(pr => projectCard(pr)).join('');
+
+    document.querySelectorAll('.card.folder[data-group]').forEach(c => {
+      c.addEventListener('click', e => { if (e.target.closest('a')) return; showGroup(c.dataset.group); });
+    });
+    document.querySelectorAll('.card.folder[data-project]').forEach(c => {
+      c.addEventListener('click', e => { if (e.target.closest('a')) return; showProject(c.dataset.project); });
+    });
+  }
+
+  function projectCard(pr){
+    const r = rollup(pr);
+    return '<div class="card folder" data-project="' + pr.id + '">'
+      + '<div class="cardtop"><span class="tag">' + pr.tag + '</span>'
+        + '<span class="count">' + pr.pages.length + (pr.pages.length > 1 ? ' pages' : ' page') + '</span></div>'
+      + '<div class="name"><span>' + pr.icon + '</span>' + pr.name + '</div>'
+      + '<p class="desc">' + pr.description + '</p>'
+      + convBlock(r.cv, 'Conversion')
+      + '<div class="micro"><span><b>' + n(r.views) + '</b> views</span>'
+        + '<span><b>' + n(r.visitors) + '</b> visitors</span>'
+        + '<span><b>' + n(r.optins) + '</b> opt-ins</span></div>'
+      + tagBlock(projectTags(pr))
+      + '<div class="actions">'
+        + '<button type="button" class="btn" data-open="' + pr.id + '">Open \u2192</button>'
+        + '<a class="btn ghost" href="' + pr.home + '" target="_blank" rel="noopener">View live</a>'
+      + '</div></div>';
+  }
+
+  // ---------- level 2: the magnets inside a group ----------
+  function renderGroup(g){
+    document.getElementById('title').textContent = g.icon + '  ' + g.name;
+    document.getElementById('subtitle').textContent = g.description;
+    document.getElementById('crumbSlot').innerHTML =
+      '<div class="crumb"><button type="button" id="upBtn">\u2190 All projects</button>'
+      + '<span class="where">Projects / <b>' + g.name + '</b></span></div>';
+    document.getElementById('upBtn').addEventListener('click', showFolders);
+
+    document.getElementById('grid').innerHTML = inGroup(g.id).map(pr => projectCard(pr)).join('');
+    document.querySelectorAll('.card.folder[data-project]').forEach(c => {
+      c.addEventListener('click', e => { if (e.target.closest('a')) return; showProject(c.dataset.project); });
     });
   }
 
   function renderProject(pr){
     document.getElementById('title').textContent = pr.icon + '  ' + pr.name;
     document.getElementById('subtitle').textContent = pr.description;
+    const g = groupOf(pr);
     document.getElementById('crumbSlot').innerHTML =
-      '<div class="crumb"><button type="button" id="upBtn">← All projects</button>'
-      + '<span class="where">Projects / <b>' + pr.name + '</b></span></div>';
-    document.getElementById('upBtn').addEventListener('click', showFolders);
+      '<div class="crumb"><button type="button" id="upBtn">← ' + (g ? g.name : 'All projects') + '</button>'
+      + '<span class="where">Projects / ' + (g ? g.name + ' / ' : '') + '<b>' + pr.name + '</b></span></div>';
+    document.getElementById('upBtn').addEventListener('click', () => g ? showGroup(g.id) : showFolders());
 
     document.getElementById('grid').innerHTML = pr.pages.map((p, i) => {
-      const s = st(p.key), isGate = p.kind === 'gate';
+      const s = st(p.key), isGate = p.kind === 'gate', isThanks = p.kind === 'thanks';
       const cv = isGate && s.visitors ? (s.optins/s.visitors)*100 : null;
+      const kindLabel = isGate ? 'Opt-in page' : isThanks ? 'Thank-you page' : 'Asset page';
       return '<div class="card">'
-        + '<div class="cardtop"><span class="tag">' + (isGate ? 'Opt-in page' : 'Asset page') + '</span></div>'
+        + '<div class="cardtop"><span class="tag">' + kindLabel + '</span></div>'
         + '<div class="name">' + p.name + '</div>'
         + '<p class="desc">' + p.description + '</p>'
-        + convBlock(cv, isGate ? 'Conversion' : 'Behind an opt-in')
+        + convBlock(cv, isGate ? 'Conversion' : isThanks ? 'After the opt-in' : 'Behind an opt-in')
         + '<div class="micro"><span><b>' + n(s.views) + '</b> views</span>'
           + '<span><b>' + n(s.visitors) + '</b> visitors</span>'
           + (isGate ? '<span><b>' + n(s.optins) + '</b> opt-ins</span>' : '') + '</div>'
-        + tagBlock(p.tags)
+        + (isThanks && !(p.tags || []).length
+             ? '<div class="taghead">GHL tags</div><div class="tag-none">tagged on the opt-in step: '
+               + (projectTags(pr).join(', ') || 'none') + '</div>'
+             : tagBlock(p.tags))
         + '<div class="actions">'
           + '<button type="button" class="btn" data-idx="' + i + '">Edit ↗</button>'
           + '<a class="btn ghost" href="' + p.url + '" target="_blank" rel="noopener">View live</a>'
+          + (p.pdf ? '<a class="btn ghost" href="' + p.pdf + '" download>Download PDF ↓</a>' : '')
         + '</div></div>';
     }).join('');
 
@@ -434,17 +525,28 @@
   }
 
   function showFolders(){
-    openProject = null;
-    if (location.hash.startsWith('#p/')) history.pushState({}, '', '#');
+    openProject = null; openGroup = null;
+    if (location.hash && location.hash !== '#') history.pushState({}, '', '#');
     renderFolders();
+  }
+  function showGroup(id, skipHash){
+    const g = GROUPS.find(x => x.id === id); if (!g) return;
+    openGroup = g; openProject = null;
+    if (!skipHash) history.pushState({group:id}, '', '#g/' + id);
+    renderGroup(g);
   }
   function showProject(id, skipHash){
     const pr = PROJECTS.find(p => p.id === id); if (!pr) return;
-    openProject = pr;
+    openProject = pr; openGroup = null;
     if (!skipHash) history.pushState({project:id}, '', '#p/' + id);
     renderProject(pr);
   }
-  function repaint(){ renderTotals(); openProject ? renderProject(openProject) : renderFolders(); }
+  function repaint(){
+    renderTotals();
+    if (openProject) renderProject(openProject);
+    else if (openGroup) renderGroup(openGroup);
+    else renderFolders();
+  }
 
   async function loadStats(){
     const rows = await Promise.all(ALL.map(async p => {
@@ -496,17 +598,22 @@
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
     if (overlay.classList.contains('open')) closeEditor();
-    else if (openProject) showFolders();
+    else if (openProject) { const g = groupOf(openProject); g ? showGroup(g.id) : showFolders(); }
+    else if (openGroup) showFolders();
   });
   window.addEventListener('popstate', () => {
     if (overlay.classList.contains('open')) closeEditor();
-    const m = location.hash.match(/^#p\/(.+)$/);
-    if (m) showProject(m[1], true); else { openProject = null; renderFolders(); }
+    const p = location.hash.match(/^#p\/(.+)$/);
+    const g = location.hash.match(/^#g\/(.+)$/);
+    if (p) showProject(p[1], true);
+    else if (g) showGroup(g[1], true);
+    else { openProject = null; openGroup = null; renderFolders(); }
   });
 
   // copy a tag with one click, ready to paste into a GHL contact search
   document.addEventListener('click', function(e){
     var chip = e.target.closest('.tag-chip'); if (!chip) return;
+    if (chip.dataset.noc) return;                 // group card's "Inside" list
     var t = chip.dataset.tag;
     var done = function(){
       var old = chip.textContent;
@@ -523,8 +630,11 @@
 
   buildEditUrls();
   paintLock();
-  const deep = location.hash.match(/^#p\/(.+)$/);
-  if (deep) showProject(deep[1], true); else renderFolders();
+  const deepP = location.hash.match(/^#p\/(.+)$/);
+  const deepG = location.hash.match(/^#g\/(.+)$/);
+  if (deepP) showProject(deepP[1], true);
+  else if (deepG) showGroup(deepG[1], true);
+  else renderFolders();
   loadStats();
 </script>
 
