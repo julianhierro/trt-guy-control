@@ -114,6 +114,25 @@
   .btn.ghost{background:transparent;color:#fff;border-color:var(--line-bright)}
   .btn.ghost:hover{background:#fff;color:#000;border-color:#fff}
   .btn.copy.copied{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .dates{display:none;align-items:center;gap:6px;margin-left:6px}
+  .dates.on{display:inline-flex}
+  .dates input[type=date]{
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;
+    background:transparent;color:#fff;border:1px solid var(--line-bright);
+    border-radius:6px;padding:6px 8px;color-scheme:dark;
+  }
+  .dates .to{font-size:10px;color:#8d97a5;letter-spacing:.14em}
+  #resetBtn{border-color:rgba(234,88,12,.5);color:#ffb08a}
+  #resetBtn:hover{background:#c2410c;border-color:#c2410c;color:#fff}
+  .baseline{
+    margin:10px 0 0;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;
+    text-transform:uppercase;color:#ffb08a;display:none;
+  }
+  .baseline.on{display:block}
+  .baseline button{
+    margin-left:8px;background:transparent;border:1px solid var(--line-bright);color:#fff;
+    border-radius:5px;padding:3px 8px;cursor:pointer;font:inherit;
+  }
 
   /* editor overlay */
   .overlay{position:fixed;inset:0;background:#000;z-index:40;display:none;flex-direction:column}
@@ -171,10 +190,19 @@
     <div class="range" id="range">
       <button data-days="7" class="on">7 days</button>
       <button data-days="30">30 days</button>
+      <button data-days="90">90 days</button>
       <button data-days="0">All time</button>
+      <button data-custom="1" id="customBtn">Custom&hellip;</button>
+      <span class="dates" id="dates">
+        <input type="date" id="dFrom"><span class="to">to</span><input type="date" id="dTo">
+        <button id="applyDates" class="go">Apply</button>
+      </span>
+      <button id="resetBtn" title="Ignore everything before today, so your own test traffic stops counting">Reset stats</button>
+      <button id="meBtn" title="Stop counting visits from this browser">Ignore me</button>
     </div>
   </div>
 
+  <div class="baseline" id="baseline"></div>
   <div class="totals" id="totals"></div>
   <div id="crumbSlot"></div>
   <div class="grid" id="grid"></div>
@@ -221,93 +249,93 @@
           url:'https://julianhierro.github.io/trt-guy-coaching/thanks.html' },
         { kind:'gate', key:'trtdad-site', tags:["trt-dad", "coaching-interest"], name:'Coaching tab (main site)',
           description:'The coaching half of the two-tab main site. Cross-listed here because it is coaching — it lives in the Main Site project and shares that project\'s stats.',
-          url:'https://trt-guy-site.vercel.app/', editHost:'https://trt-guy-site.vercel.app' }
+          url:'https://julianhierro.github.io/trt-guy-site/', editHost:'https://julianhierro.github.io/trt-guy-site' }
       ]
     },
     {
       id:'quiz', group:'magnets', icon:'🩺', tag:'Lead Magnet', name:'Low-T Quiz',
       description:'The 10-question ADAM screen. Email captured before the result.',
-      home:'https://trt-guy-quiz.vercel.app/',
+      home:'https://julianhierro.github.io/trt-guy-quiz/',
       pages:[
         { kind:'gate', key:'trtdad-quiz', tags:["trt-dad", "adam-quiz", "low-t-positive / low-t-negative", "bloodwork-interested"], name:'Opt-In Page',
           description:'Questions, then the email gate.',
-          url:'https://trt-guy-quiz.vercel.app/' },
+          url:'https://julianhierro.github.io/trt-guy-quiz/' },
         { kind:'thanks', key:'trtdad-quiz', tags:[], name:'Result Page (thank you)',
           description:'The result and the bloodwork panel show on the same page right after the gate — that screen is this funnel\'s thank-you step.',
-          url:'https://trt-guy-quiz.vercel.app/' }
+          url:'https://julianhierro.github.io/trt-guy-quiz/' }
       ]
     },
     {
       id:'injection', group:'magnets', icon:'💉', tag:'Lead Magnet', name:'TRT Injection Guide',
       description:'Opt-in page, then the 17-page guide and the dose calculator.',
-      home:'https://trt-guy-injection-guide.vercel.app/',
+      home:'https://julianhierro.github.io/trt-guy-injection-guide/',
       pages:[
         { kind:'gate',  key:'trtdad-injection-gate', tags:["trt-dad", "injection-guide", "trt-interested"], name:'Opt-In Page',
           description:'Headline + email for the injection guide.',
-          url:'https://trt-guy-injection-guide.vercel.app/' },
+          url:'https://julianhierro.github.io/trt-guy-injection-guide/' },
         { kind:'thanks', key:'trtdad-injection-thanks', tags:[], name:'Thank You Page',
           description:'Find the email, move it to the main inbox, hit reply. Links straight to the guide.',
-          url:'https://trt-guy-injection-guide.vercel.app/thanks.html' },
+          url:'https://julianhierro.github.io/trt-guy-injection-guide/thanks.html' },
         { kind:'asset', key:'trtdad-injection-guide', tags:["trt-dad", "injection-guide"], name:'Guide + Calculator',
           description:'PDF download, the full guide on the page, and the dose calculator.',
-          pdf:'https://trt-guy-injection-guide.vercel.app/Hero-Dad-Complete-TRT-Injection-Guide.pdf',
-          url:'https://trt-guy-injection-guide.vercel.app/guide.html' }
+          pdf:'https://julianhierro.github.io/trt-guy-injection-guide/Hero-Dad-Complete-TRT-Injection-Guide.pdf',
+          url:'https://julianhierro.github.io/trt-guy-injection-guide/guide.html' }
       ]
     },
     {
       id:'guide101', group:'magnets', icon:'📘', tag:'Lead Magnet', name:'The TRT 101 Guide',
       description:'Opt-in page, then the 17-page guide and the PDF download.',
-      home:'https://trt-guy-101-guide.vercel.app/get',
+      home:'https://julianhierro.github.io/trt-guy-101-guide/get',
       pages:[
         { kind:'gate',  key:'trtdad-101-gate', tags:["trt-dad", "trt-101-guide", "trt-interested"], name:'Opt-In Page',
           description:'First name + email. Tags trt-101-guide in GHL.',
-          url:'https://trt-guy-101-guide.vercel.app/get' },
+          url:'https://julianhierro.github.io/trt-guy-101-guide/get' },
         { kind:'thanks', key:'trtdad-101-thanks', tags:[], name:'Thank You Page',
           description:'Find the email, move it to the main inbox, hit reply. Plus a direct PDF download.',
-          url:'https://trt-guy-101-guide.vercel.app/thanks' },
+          url:'https://julianhierro.github.io/trt-guy-101-guide/thanks' },
         { kind:'asset', key:'trtdad-101-guide', tags:["trt-dad", "trt-101-guide"], name:'The TRT 101 Guide (PDF)',
           description:'The full 17-page guide. Edit it here, then download the PDF \u2014 \u2318K adds links.',
-          pdf:'https://trt-guy-101-guide.vercel.app/TRT-Guy-TRT-101-Guide.pdf',
-          url:'https://trt-guy-101-guide.vercel.app/' }
+          pdf:'https://julianhierro.github.io/trt-guy-101-guide/TRT-Guy-TRT-101-Guide.pdf',
+          url:'https://julianhierro.github.io/trt-guy-101-guide/' }
       ]
     },
     {
       id:'rules', group:'magnets', icon:'📋', tag:'Lead Magnet', name:'5 TRT Non-Negotiables',
       description:'Single opt-in page. The guide itself goes out by email.',
-      home:'https://trt-guy-trt-rules.vercel.app/',
+      home:'https://julianhierro.github.io/trt-guy-trt-rules/',
       pages:[
         { kind:'gate', key:'trtdad-rules-gate', tags:["trt-dad", "trt-non-negotiables", "trt-interested"], name:'Opt-In Page',
           description:'Your headline, your copy, and the form.',
-          url:'https://trt-guy-trt-rules.vercel.app/' },
+          url:'https://julianhierro.github.io/trt-guy-trt-rules/' },
         { kind:'thanks', key:'trtdad-rules-thanks', tags:[], name:'Thank You Page',
           description:'Find the email, move it to the main inbox, hit reply.',
-          url:'https://trt-guy-trt-rules.vercel.app/thanks.html' }
+          url:'https://julianhierro.github.io/trt-guy-trt-rules/thanks.html' }
       ]
     },
     {
       id:'course', group:'magnets', icon:'✉️', tag:'Email Course', name:'30 Emails In 30 Days',
       description:'Opt-in page and the confirmation page for the free daily email course.',
-      home:'https://trt-guy-30-days.vercel.app/',
+      home:'https://julianhierro.github.io/trt-guy-30-days/',
       pages:[
         { kind:'gate', key:'trtdad-30days', tags:["trt-dad", "30-emails-30-days"], name:'Opt-In Page',
           description:'Copy kept word for word from the original GoHighLevel page.',
-          url:'https://trt-guy-30-days.vercel.app/' },
+          url:'https://julianhierro.github.io/trt-guy-30-days/' },
         { kind:'thanks', key:'trtdad-30days-confirm', tags:[], name:'Thank You Page',
           description:'Find email #1, move it to the main inbox, hit reply — or the rest go to spam.',
-          url:'https://trt-guy-30-days.vercel.app/confirmation.html' }
+          url:'https://julianhierro.github.io/trt-guy-30-days/confirmation.html' }
       ]
     },
     {
       id:'site', icon:'🏠', tag:'Hub', name:'Main Site',
       description:'Two sections toggled from the nav — the free email course and the coaching sales page. Also hosts /api/submit.',
-      home:'https://trt-guy-site.vercel.app/',
+      home:'https://julianhierro.github.io/trt-guy-site/',
       pages:[
         { kind:'gate', key:'trtdad-site', tags:["trt-dad", "30-emails-30-days", "coaching-interest"], name:'Home',
           description:'Email course + the full coaching sales page, switched from the nav bar. In ?edit=1 the tabs still work and the FAQ opens so you can edit it.',
-          url:'https://trt-guy-site.vercel.app/' },
+          url:'https://julianhierro.github.io/trt-guy-site/' },
         { kind:'asset', key:'trtdad-30days-confirm', tags:[], name:'Email Confirmation Page',
           description:'Where the email-course opt-in lands — the whitelist steps. Same page as in the 30 Emails project.',
-          url:'https://trt-guy-30-days.vercel.app/confirmation.html' }
+          url:'https://julianhierro.github.io/trt-guy-30-days/confirmation.html' }
       ]
     }
   ];
@@ -357,12 +385,29 @@
   /* ── stats ── */
   const STATS = 'https://jv-dashboard-chi.vercel.app/api/pagestats';
   let rangeDays = 7, statsByKey = {}, openProject = null, openGroup = null;
+  let customFrom = null, customTo = null;
+
+  /* A "reset" here HIDES history rather than deleting it: everything before the
+     baseline date is excluded from every query. Nothing is destroyed, and the
+     Undo button below puts it all back. */
+  const BASE_KEY = 'td-stats-baseline';
+  const getBaseline = () => { try { return localStorage.getItem(BASE_KEY) || ''; } catch (e) { return ''; } };
+  const setBaseline = v => { try { v ? localStorage.setItem(BASE_KEY, v) : localStorage.removeItem(BASE_KEY); } catch (e) {} };
 
   const ymd = d => d.toISOString().slice(0,10);
   const rangeQS = () => {
-    if (!rangeDays) return '';
-    const to = new Date(), from = new Date(to.getTime() - rangeDays * 864e5);
-    return '&from=' + ymd(from) + '&to=' + ymd(to);
+    const base = getBaseline();
+    let from = null, to = null;
+    if (customFrom || customTo) { from = customFrom; to = customTo; }
+    else if (rangeDays) {
+      const t = new Date();
+      to = ymd(t); from = ymd(new Date(t.getTime() - rangeDays * 864e5));
+    }
+    if (base && (!from || from < base)) from = base;   // never look further back than the reset
+    let qs = '';
+    if (from) qs += '&from=' + from;
+    if (to)   qs += '&to=' + to;
+    return qs;
   };
   const n = x => (x || 0).toLocaleString();
   const cvClass = v => v == null ? 'low' : v >= 25 ? 'good' : v >= 10 ? 'mid' : 'acc';
@@ -571,11 +616,64 @@
     repaint();
   }
 
+  const datesEl = document.getElementById('dates');
+
   document.getElementById('range').addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
+    if (b.id === 'applyDates' || b.id === 'resetBtn' || b.id === 'meBtn') return;   // handled separately
+
     document.querySelectorAll('#range button').forEach(x => x.classList.toggle('on', x === b));
+
+    if (b.dataset.custom) { datesEl.classList.add('on'); document.getElementById('dFrom').focus(); return; }
+
+    datesEl.classList.remove('on');
+    customFrom = customTo = null;
     rangeDays = +b.dataset.days;
     loadStats();
+  });
+
+  document.getElementById('applyDates').addEventListener('click', e => {
+    e.stopPropagation();
+    const f = document.getElementById('dFrom').value, t = document.getElementById('dTo').value;
+    if (!f && !t) return;
+    customFrom = f || null;
+    customTo   = t || null;
+    rangeDays  = 0;
+    document.getElementById('customBtn').classList.add('on');
+    loadStats();
+  });
+
+  const ME_KEY = 'td-notrack';
+  const meOn = () => { try { return localStorage.getItem(ME_KEY) === '1'; } catch (e) { return false; } };
+  function paintMe(){
+    const b = document.getElementById('meBtn');
+    b.classList.toggle('on', meOn());
+    b.textContent = meOn() ? 'Ignoring me \u2713' : 'Ignore me';
+  }
+  document.getElementById('meBtn').addEventListener('click', e => {
+    e.stopPropagation();
+    try { meOn() ? localStorage.removeItem(ME_KEY) : localStorage.setItem(ME_KEY, '1'); } catch (err) {}
+    paintMe();
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', e => {
+    e.stopPropagation();
+    const today = ymd(new Date());
+    if (!confirm('Ignore everything before ' + today + '?\n\nNothing is deleted \u2014 the dashboard just stops counting earlier traffic, including your own testing. You can undo this any time.')) return;
+    setBaseline(today);
+    paintBaseline();
+  paintMe();
+    loadStats();
+  });
+
+  function paintBaseline(){
+    const el = document.getElementById('baseline'), b = getBaseline();
+    el.classList.toggle('on', !!b);
+    if (b) el.innerHTML = 'Counting from ' + b + ' <button id="undoBase" type="button">Undo</button>';
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#undoBase')) return;
+    setBaseline(''); paintBaseline(); loadStats();
   });
 
   /* ── editor overlay ── */
@@ -660,6 +758,8 @@
 
   buildEditUrls();
   paintLock();
+  paintBaseline();
+  paintMe();
   const deepP = location.hash.match(/^#p\/(.+)$/);
   const deepG = location.hash.match(/^#g\/(.+)$/);
   if (deepP) showProject(deepP[1], true);
