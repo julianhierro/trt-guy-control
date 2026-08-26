@@ -257,7 +257,7 @@
     {
       id:'guide101', group:'magnets', icon:'📘', tag:'Lead Magnet', name:'The TRT 101 Guide',
       description:'Opt-in page, then the 17-page guide and the PDF download.',
-      home:'https://trt-guy-101-guide.vercel.app/',
+      home:'https://trt-guy-101-guide.vercel.app/get',
       pages:[
         { kind:'gate',  key:'trtdad-101-gate', tags:["trt-dad", "trt-101-guide", "trt-interested"], name:'Opt-In Page',
           description:'First name + email. Tags trt-101-guide in GHL.',
@@ -320,6 +320,14 @@
       description:'Every free thing you give away. Each one opens into its own opt-in page and thank-you page.' }
   ];
   const groupOf = pr => pr.group ? GROUPS.find(g => g.id === pr.group) : null;
+
+  // The link you'd actually send someone is the opt-in page — never the asset
+  // sitting behind it. Derive it from the pages rather than a hand-set `home`,
+  // so a project whose opt-in isn't at the root can't hand out the wrong URL.
+  function entryUrl(pr){
+    const gate = (pr.pages || []).find(p => p.kind === 'gate');
+    return gate ? gate.url : pr.home;
+  }
   const inGroup = gid => PROJECTS.filter(pr => pr.group === gid);
 
   const ALL = [];
@@ -469,8 +477,8 @@
       + tagBlock(projectTags(pr))
       + '<div class="actions">'
         + '<button type="button" class="btn" data-open="' + pr.id + '">Open \u2192</button>'
-        + '<a class="btn ghost" href="' + pr.home + '" target="_blank" rel="noopener">View live</a>'
-        + '<button type="button" class="btn ghost copy" data-copy="' + pr.home + '" title="Copy this funnel\u2019s link">Copy link \u29c9</button>'
+        + '<a class="btn ghost" href="' + entryUrl(pr) + '" target="_blank" rel="noopener">View live</a>'
+        + '<button type="button" class="btn ghost copy" data-copy="' + entryUrl(pr) + '" title="Copy the opt-in link \u2014 the one you send people">Copy opt-in link \u29c9</button>'
       + '</div></div>';
   }
 
@@ -517,7 +525,7 @@
         + '<div class="actions">'
           + '<button type="button" class="btn" data-idx="' + i + '">Edit ↗</button>'
           + '<a class="btn ghost" href="' + p.url + '" target="_blank" rel="noopener">View live</a>'
-          + '<button type="button" class="btn ghost copy" data-copy="' + p.url + '" title="Copy this page\u2019s link">Copy link ⧉</button>'
+          + '<button type="button" class="btn ghost copy" data-copy="' + p.url + '" title="Copy this page\u2019s own link">Copy link ⧉</button>'
           + (p.pdf ? '<a class="btn ghost" href="' + p.pdf + '" download>Download PDF ↓</a>' : '')
         + '</div></div>';
     }).join('');
