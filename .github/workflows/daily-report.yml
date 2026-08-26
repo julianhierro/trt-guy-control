@@ -1,0 +1,22 @@
+name: Daily report
+
+# 13:00 UTC — around 8am Mexico City / 9am US Central.
+# Change the cron line to move it; GitHub uses UTC.
+on:
+  schedule:
+    - cron: '0 13 * * *'
+  workflow_dispatch:        # lets you run it by hand from the Actions tab
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Build and send yesterday's report
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/daily-report.mjs
