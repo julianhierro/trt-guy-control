@@ -135,6 +135,85 @@
   }
 
   /* editor overlay */
+  /* ── To-do drawer ────────────────────────────────────────────────────────
+     The same list as the phone app, off the same store, so a note taken on
+     the couch is on the laptop and vice versa. Slides over the grid rather
+     than taking a tab, because it is a companion to whatever you're looking
+     at, not a place you go. */
+  .todo-btn{position:relative;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;font-weight:700;padding:9px 13px;border-radius:7px;cursor:pointer;
+    background:transparent;color:var(--muted);border:1px solid var(--line-bright);transition:all .14s}
+  .todo-btn:hover{color:#fff;border-color:#fff}
+  .todo-btn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .todo-btn .n{display:none;margin-left:7px;padding:2px 6px;border-radius:999px;
+    background:var(--accent);color:#fff;font-size:9.5px;letter-spacing:.06em}
+  .todo-btn.has .n{display:inline-block}
+  .todo-btn.on .n{background:rgba(255,255,255,.22)}
+
+  .todo-scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:44;opacity:0;pointer-events:none;
+    transition:opacity .18s ease}
+  .todo-scrim.open{opacity:1;pointer-events:auto}
+  .todo{position:fixed;top:0;right:0;bottom:0;width:min(430px,100%);z-index:45;
+    background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;
+    transform:translateX(100%);transition:transform .2s ease;box-shadow:-24px 0 60px rgba(0,0,0,.55)}
+  .todo.open{transform:none}
+  .todo-head{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line)}
+  .todo-head h2{margin:0;font-size:17px;font-weight:800;letter-spacing:-.02em;flex:1}
+  .todo-sync{display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2)}
+  .todo-sync i{width:6px;height:6px;border-radius:50%;background:var(--muted-2);font-style:normal}
+  .todo-sync i.on{background:var(--good)}
+  .todo-sync i.err{background:#ef4444}
+  .todo-x{border:0;background:none;color:var(--muted);font-size:22px;line-height:1;cursor:pointer;padding:0 2px}
+  .todo-x:hover{color:#fff}
+
+  .todo-seg{display:flex;gap:5px;padding:12px 18px 0}
+  .todo-seg button{flex:1;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;
+    text-transform:uppercase;font-weight:600;padding:9px;border-radius:7px;cursor:pointer;
+    background:transparent;color:var(--muted);border:1px solid var(--line-bright)}
+  .todo-seg button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+
+  .todo-list{flex:1;overflow:auto;padding:14px 18px 18px}
+  .todo-day{margin:16px 0 8px;font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted-2)}
+  .todo-list .todo-day:first-child{margin-top:2px}
+  .ti{display:flex;gap:11px;align-items:flex-start;padding:12px 13px;margin-bottom:7px;
+    background:var(--panel-2);border:1px solid var(--line);border-radius:11px}
+  .ti.done{background:transparent;border-style:dashed}
+  .ti .ck{flex:none;width:21px;height:21px;margin-top:1px;border-radius:6px;border:2px solid var(--line-bright);
+    background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+  .ti .ck svg{width:12px;height:12px;opacity:0;color:#fff}
+  .ti.done .ck{background:var(--accent);border-color:var(--accent)}
+  .ti.done .ck svg{opacity:1}
+  .ti .bd{flex:1;min-width:0}
+  .ti .tx{font-size:14px;line-height:1.45;white-space:pre-wrap;word-wrap:break-word}
+  .ti.done .tx{color:var(--muted-2);text-decoration:line-through}
+  .ti .kd{display:inline-block;margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:9px;
+    letter-spacing:.13em;text-transform:uppercase;padding:3px 6px;border-radius:5px;
+    background:#141417;color:var(--muted-2)}
+  .ti .kd.task{color:#9dbcff;background:var(--accent-soft)}
+  .ti .kd.idea{color:#f0c36b;background:rgba(240,195,107,.12)}
+  .ti .kd.note{color:#a7f3d0;background:rgba(167,243,208,.1)}
+  .ti .rm{flex:none;border:0;background:none;color:var(--muted-2);font-size:17px;line-height:1;
+    cursor:pointer;padding:1px 3px}
+  .ti .rm:hover{color:#ef4444}
+  .todo-empty{text-align:center;color:var(--muted-2);padding:44px 18px;font-size:13.5px;line-height:1.65}
+  .todo-empty b{display:block;color:#fff;font-size:14.5px;margin-bottom:5px}
+
+  .todo-add{border-top:1px solid var(--line);padding:12px 18px 16px;background:var(--panel)}
+  .todo-kinds{display:flex;gap:6px;margin-bottom:9px}
+  .todo-kinds button{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.13em;
+    text-transform:uppercase;font-weight:600;padding:7px 11px;border-radius:999px;cursor:pointer;
+    background:transparent;color:var(--muted-2);border:1px solid var(--line-bright)}
+  .todo-kinds button.on{background:var(--accent-soft);border-color:var(--accent);color:#9dbcff}
+  .todo-form{display:flex;gap:8px;align-items:flex-end}
+  .todo-form textarea{flex:1;min-height:44px;max-height:130px;resize:none;padding:11px 13px;border-radius:10px;
+    border:1px solid var(--line-bright);background:#0a0a0c;color:#fff;font:400 14px/1.4 Inter,sans-serif;outline:0}
+  .todo-form textarea:focus{border-color:var(--accent)}
+  .todo-form button{flex:none;width:44px;height:44px;border:0;border-radius:10px;background:var(--accent);
+    color:#fff;font-size:21px;line-height:1;cursor:pointer}
+  @media (max-width:560px){ .todo{width:100%} }
+
   .overlay{position:fixed;inset:0;background:#000;z-index:40;display:none;flex-direction:column}
   .overlay.open{display:flex}
   .frame-bar{border-bottom:1px solid var(--line);padding:12px 20px;display:flex;align-items:center;
@@ -177,6 +256,7 @@
 <header class="topbar">
   <a href="#" class="brand"><span class="dot"></span>TRT<span class="slash">/</span>GUY</a>
   <div class="right">
+    <button type="button" class="todo-btn" id="todoBtn">📝 To-do<span class="n" id="todoN">0</span></button>
     <span>Control Center</span>
   </div>
 </header>
@@ -207,6 +287,31 @@
   <div id="crumbSlot"></div>
   <div class="grid" id="grid"></div>
 </main>
+
+<div class="todo-scrim" id="todoScrim"></div>
+<aside class="todo" id="todo" aria-label="To-do list">
+  <div class="todo-head">
+    <h2>To-do</h2>
+    <span class="todo-sync"><i id="todoDot"></i><span id="todoSync">offline</span></span>
+    <button type="button" class="todo-x" id="todoClose" aria-label="Close">&times;</button>
+  </div>
+  <div class="todo-seg">
+    <button type="button" class="on" data-view="open">Open</button>
+    <button type="button" data-view="done">Done</button>
+  </div>
+  <div class="todo-list" id="todoList"></div>
+  <div class="todo-add">
+    <div class="todo-kinds">
+      <button type="button" class="on" data-kind="task">Task</button>
+      <button type="button" data-kind="idea">Idea</button>
+      <button type="button" data-kind="note">Note</button>
+    </div>
+    <form class="todo-form" id="todoForm">
+      <textarea id="todoText" rows="1" placeholder="Task, content idea, note&hellip;"></textarea>
+      <button type="submit" aria-label="Add">+</button>
+    </form>
+  </div>
+</aside>
 
 <div class="overlay" id="overlay">
   <div class="frame-bar">
@@ -758,6 +863,155 @@
       document.body.removeChild(ta); done();
     }
   });
+
+  /* ── To-do ────────────────────────────────────────────────────────────────
+     Same list, same store as the phone app (site key td-todos), so whichever
+     screen is nearest is the right one to write it down on. Local copy first
+     so the drawer opens instantly; last write wins on sync — no merge, which
+     is what keeps one list from forking into two. */
+  const TODO_API   = 'https://jv-dashboard-chi.vercel.app/api/content?site=td-todos&page=1';
+  const TODO_LOCAL = 'trtguy-todos';
+  let todo = { items: [], updatedAt: 0 };
+  let todoKind = 'task', todoView = 'open', todoPushing = false;
+
+  const $todo = document.getElementById('todo');
+  const $todoList = document.getElementById('todoList');
+  const $todoBtn = document.getElementById('todoBtn');
+  const $todoText = document.getElementById('todoText');
+
+  function todoUid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+  function todoSync(cls, txt){
+    document.getElementById('todoDot').className = cls;
+    document.getElementById('todoSync').textContent = txt;
+  }
+  function todoLoadLocal(){
+    try {
+      const v = JSON.parse(localStorage.getItem(TODO_LOCAL) || 'null');
+      if (v && Array.isArray(v.items)) todo = v;
+    } catch (e) {}
+  }
+  function todoSave(){
+    todo.updatedAt = Date.now();
+    try { localStorage.setItem(TODO_LOCAL, JSON.stringify(todo)); } catch (e) {}
+    todoRender();
+    todoPush();
+  }
+  function todoPush(){
+    if (todoPushing) return;
+    todoPushing = true;
+    fetch(TODO_API, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ password:'', edits:[{ eid:'todos', html: JSON.stringify(todo) }] }) })
+      .then(r => todoSync(r.ok ? 'on' : 'err', r.ok ? 'synced' : 'not synced'))
+      .catch(() => todoSync('err','offline'))
+      .then(() => { todoPushing = false; });
+  }
+  function todoPull(){
+    fetch(TODO_API + '&t=' + Date.now(), { cache:'no-store' })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        const rec = d && Array.isArray(d.edits) && d.edits[0];
+        if (rec && rec.html) {
+          const remote = JSON.parse(rec.html);
+          if (remote && Array.isArray(remote.items) && (remote.updatedAt||0) > (todo.updatedAt||0)) {
+            todo = remote;
+            try { localStorage.setItem(TODO_LOCAL, JSON.stringify(todo)); } catch (e) {}
+            todoRender();
+          }
+        }
+        todoSync('on','synced');
+      })
+      .catch(() => todoSync('err','offline'));
+  }
+  function todoDay(ts){
+    const d = new Date(ts), n = new Date();
+    const same = (a,b) => a.toDateString() === b.toDateString();
+    if (same(d,n)) return 'Today';
+    if (same(d, new Date(n.getTime() - 86400000))) return 'Yesterday';
+    return d.toLocaleDateString(undefined, { weekday:'short', day:'numeric', month:'short' });
+  }
+  function todoRender(){
+    const open = todo.items.filter(i => !i.done).sort((a,b) => b.at - a.at);
+    const done = todo.items.filter(i =>  i.done).sort((a,b) => (b.doneAt||b.at) - (a.doneAt||a.at));
+    $todoBtn.classList.toggle('has', open.length > 0);
+    document.getElementById('todoN').textContent = open.length;
+
+    const list = todoView === 'open' ? open : done;
+    if (!list.length) {
+      $todoList.innerHTML = todoView === 'open'
+        ? '<div class="todo-empty"><b>Nothing on the list</b>A task, an idea for content, or a note you don\'t want to lose.</div>'
+        : '<div class="todo-empty"><b>Nothing crossed off yet</b>Things you tick show up here.</div>';
+      return;
+    }
+    let html = '', lastDay = '';
+    list.forEach(it => {
+      const day = todoDay(it.at);
+      if (day !== lastDay) { html += '<div class="todo-day">' + day + '</div>'; lastDay = day; }
+      html += '<div class="ti' + (it.done ? ' done' : '') + '" data-id="' + it.id + '">' +
+        '<button class="ck" type="button" aria-label="Done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></button>' +
+        '<div class="bd"><div class="tx"></div><span class="kd ' + it.kind + '">' + it.kind + '</span></div>' +
+        '<button class="rm" type="button" aria-label="Delete">&times;</button></div>';
+    });
+    $todoList.innerHTML = html;
+    // text goes in as textContent — a note can never inject markup into the dashboard
+    const nodes = $todoList.querySelectorAll('.ti');
+    list.forEach((it, i) => { if (nodes[i]) nodes[i].querySelector('.tx').textContent = it.text; });
+  }
+  function todoOpen(on){
+    $todo.classList.toggle('open', on);
+    document.getElementById('todoScrim').classList.toggle('open', on);
+    $todoBtn.classList.toggle('on', on);
+    if (on) { todoPull(); setTimeout(() => $todoText.focus(), 210); }
+  }
+
+  $todoBtn.addEventListener('click', () => todoOpen(!$todo.classList.contains('open')));
+  document.getElementById('todoClose').addEventListener('click', () => todoOpen(false));
+  document.getElementById('todoScrim').addEventListener('click', () => todoOpen(false));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && $todo.classList.contains('open')) todoOpen(false);
+  });
+  $todo.addEventListener('click', e => {
+    const seg = e.target.closest('.todo-seg button');
+    if (seg) {
+      todoView = seg.dataset.view;
+      $todo.querySelectorAll('.todo-seg button').forEach(b => b.classList.toggle('on', b === seg));
+      todoRender(); return;
+    }
+    const k = e.target.closest('.todo-kinds button');
+    if (k) {
+      todoKind = k.dataset.kind;
+      $todo.querySelectorAll('.todo-kinds button').forEach(b => b.classList.toggle('on', b === k));
+      return;
+    }
+    const row = e.target.closest('.ti'); if (!row) return;
+    const it = todo.items.find(x => x.id === row.dataset.id); if (!it) return;
+    if (e.target.closest('.ck')) { it.done = !it.done; it.doneAt = Date.now(); todoSave(); }
+    else if (e.target.closest('.rm')) {
+      todo.items = todo.items.filter(x => x.id !== it.id); todoSave();
+    }
+  });
+  $todoText.addEventListener('input', () => {
+    $todoText.style.height = 'auto';
+    $todoText.style.height = Math.min($todoText.scrollHeight, 130) + 'px';
+  });
+  $todoText.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('todoForm').requestSubmit(); }
+  });
+  document.getElementById('todoForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const text = $todoText.value.trim(); if (!text) return;
+    todo.items.push({ id: todoUid(), text, kind: todoKind, done:false, at: Date.now() });
+    $todoText.value = ''; $todoText.style.height = 'auto';
+    if (todoView !== 'open') {
+      todoView = 'open';
+      $todo.querySelectorAll('.todo-seg button').forEach(b => b.classList.toggle('on', b.dataset.view === 'open'));
+    }
+    todoSave();
+  });
+  window.addEventListener('focus', () => { if ($todo.classList.contains('open')) todoPull(); });
+
+  todoLoadLocal();
+  todoRender();
+  todoPull();
 
   buildEditUrls();
   paintLock();
