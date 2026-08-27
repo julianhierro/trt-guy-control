@@ -212,7 +212,8 @@
   .todo-form textarea:focus{border-color:var(--accent)}
   .todo-form button{flex:none;width:44px;height:44px;border:0;border-radius:10px;background:var(--accent);
     color:#fff;font-size:21px;line-height:1;cursor:pointer}
-  @media (max-width:560px){ .todo{width:100%} }
+  /* 16px or iOS zooms the whole dashboard in the moment the caret lands */
+  @media (max-width:560px){ .todo{width:100%} .todo-form textarea{font-size:16px} }
 
   .overlay{position:fixed;inset:0;background:#000;z-index:40;display:none;flex-direction:column}
   .overlay.open{display:flex}
