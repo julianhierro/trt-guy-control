@@ -30,6 +30,8 @@
   }
   .brand{font-family:'JetBrains Mono',monospace;font-weight:700;letter-spacing:.12em;font-size:13.5px;
     display:flex;align-items:center;text-decoration:none;color:#fff}
+  /* the T mark replaces the accent dot — same job, actual branding */
+  .brand .mark{width:24px;height:24px;border-radius:5px;margin-right:11px;display:block}
   .brand .dot{width:7px;height:7px;background:var(--accent);border-radius:50%;margin-right:10px}
   .brand .slash{color:var(--muted-2);margin:0 5px}
   .topbar .right{display:flex;align-items:center;gap:12px;
@@ -412,7 +414,7 @@
 <body>
 
 <header class="topbar">
-  <a href="#" class="brand"><span class="dot"></span>TRT<span class="slash">/</span>GUY</a>
+  <a href="#" class="brand"><img class="mark" src="icon-180.png" alt="" width="24" height="24">TRT<span class="slash">/</span>GUY</a>
   <div class="right">
     <button type="button" class="todo-btn" id="inboxBtn">📥 Inbox<span class="n" id="inboxN">0</span></button>
     <button type="button" class="todo-btn" id="todoBtn">📝 To-do<span class="n" id="todoN">0</span></button>
