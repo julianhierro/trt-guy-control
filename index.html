@@ -353,6 +353,20 @@
   .in-compose .d-foot button{width:auto;flex:none;padding:12px 22px;background:var(--accent);
     border-color:var(--accent)}
 
+  .in-filters .seg-arch{flex:0 0 auto;padding-left:12px;padding-right:12px}
+  .in-filters .seg-arch.on{background:#2b2b30;border-color:var(--line-bright);color:#fff}
+  .d-bar .d-del.in-danger:hover{color:#fff;border-color:#ef4444;background:rgba(239,68,68,.18)}
+  .in-compose .d-foot .in-err,.in-reply .in-err{display:block}
+  .cv{position:relative}
+  .cv .acts{position:absolute;top:7px;right:8px;display:none;gap:4px}
+  .cv:hover .acts{display:flex}
+  .cv .acts button{border:1px solid var(--line-bright);background:var(--panel);color:var(--muted-2);
+    cursor:pointer;border-radius:6px;padding:4px 7px;
+    font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.11em;text-transform:uppercase}
+  .cv .acts button:hover{color:#fff;border-color:#fff}
+  .cv .acts button.rm:hover{color:#fff;border-color:#ef4444;background:rgba(239,68,68,.2)}
+  .cv.gone{opacity:.35;pointer-events:none}
+
   @media (max-width:560px){ .todo{width:100%} .todo.inbox{width:100%}
     .todo-form textarea,.d-title,#dNotes,#inText,.in-gate input,
     .in-subj,.cm-body input,.cm-body textarea{font-size:16px} }
@@ -510,6 +524,7 @@
     <button type="button" data-ch="email">Email</button>
     <button type="button" data-ch="ig">IG</button>
     <button type="button" data-ch="sms">SMS</button>
+    <button type="button" class="seg-arch" data-box="archived">Archived</button>
   </div>
   <div class="todo-list" id="inList" hidden></div>
 
@@ -538,7 +553,9 @@
     <div class="d-bar">
       <button type="button" class="d-back in-back">&larr; All</button>
       <span class="d-when" id="inWho"></span>
-      <a class="d-del" id="inGhl" href="#" target="_blank" rel="noopener">Open in GHL</a>
+      <button type="button" class="d-del" id="inArch">Archive</button>
+      <button type="button" class="d-del in-danger" id="inDel">Delete</button>
+      <a class="d-del" id="inGhl" href="#" target="_blank" rel="noopener">GHL &#8599;</a>
     </div>
     <div class="in-msgs" id="inMsgs"></div>
     <div class="in-reply">
@@ -1360,7 +1377,7 @@
   const $inList = document.getElementById('inList');
   const $inBtn = document.getElementById('inboxBtn');
   let inKey = '';
-  let inConvos = [], inFilter = '', inOpen = null, inTimer = null, inSendOn = '';
+  let inConvos = [], inFilter = '', inBox = 'inbox', inOpen = null, inTimer = null, inSendOn = '';
 
   try { inKey = localStorage.getItem(IN_KEY) || ''; } catch (e) {}
 
@@ -1395,7 +1412,7 @@
       inConvos = r.j.conversations || [];
       inUnlock();
       inPaintList();
-      const unread = inConvos.filter(c => c.unread > 0).length;
+      const unread = inConvos.filter(c => c.unread > 0 && !c.archived).length;
       $inBtn.classList.toggle('has', unread > 0);
       document.getElementById('inboxN').textContent = unread;
       inSay('on', 'synced');
@@ -1416,14 +1433,21 @@
   }
 
   function inPaintList(){
-    const rows = inFilter ? inConvos.filter(c => c.channel === inFilter) : inConvos;
+    const inThisBox = c => (inBox === 'archived' ? c.archived : !c.archived);
+    const rows = inConvos.filter(c => inThisBox(c) && (!inFilter || c.channel === inFilter));
     if (!rows.length) {
       $inList.innerHTML = '<div class="todo-empty"><b>Nothing here</b>' +
-        (inFilter ? 'No ' + CH[inFilter] + ' conversations in the last 30.' : 'No conversations came back from GoHighLevel.') + '</div>';
+        (inBox === 'archived' ? 'Nothing archived yet.'
+         : inFilter ? 'No ' + CH[inFilter] + ' conversations in the last 30.'
+         : 'No conversations came back from GoHighLevel.') + '</div>';
       return;
     }
     $inList.innerHTML = rows.map(c =>
       '<div class="cv' + (c.unread ? ' unread' : '') + '" data-id="' + c.id + '">' +
+        '<div class="acts">' +
+          '<button type="button" class="ar">' + (c.archived ? 'Restore' : 'Archive') + '</button>' +
+          '<button type="button" class="rm">Delete</button>' +
+        '</div>' +
         '<div class="av"></div>' +
         '<div class="bd"><div class="nm"><b></b>' +
           '<span class="ch ' + c.channel + '">' + (CH[c.channel] || c.channel) + '</span>' +
@@ -1451,6 +1475,7 @@
       'https://app.gohighlevel.com/v2/location/' + 'WmcafLXT7njeQOu3fqlP' + '/conversations/conversations/' + inOpen.id;
     document.getElementById('inErr').textContent = '';
     document.getElementById('inMsgs').innerHTML = '<div class="todo-empty">Loading…</div>';
+    document.getElementById('inArch').textContent = inOpen.archived ? 'Restore' : 'Archive';
     inPaintChannels(inOpen.can || [inOpen.channel]);
     inPaintThread();
   }
@@ -1526,10 +1551,19 @@
   $in.addEventListener('click', e => {
     const f = e.target.closest('.in-filters button');
     if (f) {
-      inFilter = f.dataset.ch;
-      $in.querySelectorAll('.in-filters button').forEach(b => b.classList.toggle('on', b === f));
+      if (f.dataset.box) {                       // Archived is a view, not a channel
+        inBox = inBox === 'archived' ? 'inbox' : 'archived';
+        f.classList.toggle('on', inBox === 'archived');
+      } else {
+        inFilter = f.dataset.ch;
+        $in.querySelectorAll('.in-filters button:not(.seg-arch)').forEach(b => b.classList.toggle('on', b === f));
+      }
       inPaintList(); return;
     }
+    const ar = e.target.closest('.cv .ar');
+    if (ar) { inArchive(ar.closest('.cv').dataset.id); return; }
+    const rm = e.target.closest('.cv .rm');
+    if (rm) { inDelete(rm.closest('.cv').dataset.id); return; }
     const chb = e.target.closest('.in-ch button');
     if (chb) {
       inSendOn = chb.dataset.ch;
@@ -1573,6 +1607,42 @@
       })
       .catch(() => { err.textContent = 'No connection.'; inSay('err','offline'); });
   });
+  /* ── Archive and delete ───────────────────────────────────────────────────
+     Archive is GoHighLevel's own inbox flag, so archiving here archives there —
+     it is not a local hide this dashboard invented. Delete is GHL's delete:
+     the thread and every message in it, permanently, with no undo anywhere. */
+  function inArchive(id){
+    const c = inConvos.find(x => x.id === id); if (!c) return;
+    const want = !c.archived;
+    inSay('', want ? 'archiving…' : 'restoring…');
+    inCall('action=archive', { id, archived: want }).then(r => {
+      if (!r.ok) { inSay('err', 'not archived'); return; }
+      c.archived = want;
+      inSay('on', want ? 'archived' : 'restored');
+      if (inOpen && inOpen.id === id && want) inClose();
+      inPaintList();
+      const unread = inConvos.filter(x => x.unread > 0 && !x.archived).length;
+      $inBtn.classList.toggle('has', unread > 0);
+      document.getElementById('inboxN').textContent = unread;
+    }).catch(() => inSay('err', 'offline'));
+  }
+  function inDelete(id){
+    const c = inConvos.find(x => x.id === id); if (!c) return;
+    if (!confirm('Delete the whole conversation with ' + c.name + '?\n\n' +
+                 'Every message in it goes, in GoHighLevel too. This cannot be undone.\n\n' +
+                 'Archive instead if you just want it out of the way.')) return;
+    inSay('', 'deleting…');
+    inCall('action=delete', { id, confirm: 'DELETE' }).then(r => {
+      if (!r.ok) { alert((r.j && r.j.error) || 'GoHighLevel would not delete it.'); inSay('err','not deleted'); return; }
+      inConvos = inConvos.filter(x => x.id !== id);
+      if (inOpen && inOpen.id === id) inClose();
+      inSay('on', 'deleted');
+      inPaintList();
+    }).catch(() => inSay('err', 'offline'));
+  }
+  document.getElementById('inArch').addEventListener('click', () => { if (inOpen) inArchive(inOpen.id); });
+  document.getElementById('inDel').addEventListener('click', () => { if (inOpen) inDelete(inOpen.id); });
+
   /* ── Compose ──────────────────────────────────────────────────────────────
      A first email to someone with no thread yet. Type-ahead over GHL contacts,
      or a bare address — writing to an address that isn't in the CRM creates the
