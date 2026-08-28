@@ -157,6 +157,7 @@
     background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;
     transform:translateX(100%);transition:transform .2s ease;box-shadow:-24px 0 60px rgba(0,0,0,.55)}
   .todo.open{transform:none}
+  .todo{overflow:hidden}
   .todo-head{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line)}
   .todo-head h2{margin:0;font-size:17px;font-weight:800;letter-spacing:-.02em;flex:1}
   .todo-sync{display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;
@@ -213,7 +214,55 @@
   .todo-form button{flex:none;width:44px;height:44px;border:0;border-radius:10px;background:var(--accent);
     color:#fff;font-size:21px;line-height:1;cursor:pointer}
   /* 16px or iOS zooms the whole dashboard in the moment the caret lands */
-  @media (max-width:560px){ .todo{width:100%} .todo-form textarea{font-size:16px} }
+  .ti .mt{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;align-items:center}
+  .ti .pi{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.13em;text-transform:uppercase;
+    padding:3px 6px;border-radius:5px;border:1px solid transparent}
+  .ti .pi.p1{color:#ff9a8b;background:rgba(239,68,68,.13);border-color:rgba(239,68,68,.3)}
+  .ti .pi.p2{color:#f0c36b;background:rgba(240,195,107,.1)}
+  .ti .pi.p3{color:var(--muted-2);background:#141417}
+  .ti .nt{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;color:var(--muted-2)}
+  .ti .go{flex:none;border:0;background:none;color:var(--muted-2);font-size:20px;line-height:1;
+    cursor:pointer;padding:0 2px;align-self:center}
+  .ti:hover .go{color:#fff}
+  .ti{cursor:pointer}
+  .todo-newpri button{font-size:9px}
+
+  /* the item, opened — slides over the list inside the drawer */
+  .todo-detail{position:absolute;inset:0;z-index:2;background:var(--panel);display:flex;flex-direction:column;
+    transform:translateX(100%);transition:transform .19s ease;visibility:hidden}
+  .todo.detail .todo-detail{transform:none;visibility:visible}
+  .todo.detail .todo-seg,.todo.detail .todo-add{visibility:hidden}
+  .d-bar{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
+  .d-bar .d-back{border:0;background:none;color:var(--accent);cursor:pointer;padding:0;
+    font:600 13px Inter,sans-serif}
+  .d-bar .d-when{flex:1;font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--muted-2);text-align:center}
+  .d-bar .d-del{border:1px solid var(--line-bright);background:transparent;color:var(--muted-2);cursor:pointer;
+    font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;
+    padding:6px 10px;border-radius:7px}
+  .d-bar .d-del:hover{color:#fff;border-color:#ef4444;background:rgba(239,68,68,.14)}
+  .d-body{flex:1;overflow:auto;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+  .d-title{border:0;background:none;color:#fff;font:800 20px/1.3 Inter,sans-serif;letter-spacing:-.02em;
+    resize:none;outline:0;padding:0;overflow:hidden}
+  .d-row{display:flex;gap:6px}
+  .d-pri,.d-kind{display:flex;gap:6px}
+  .d-pri button,.d-kind button{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.13em;
+    text-transform:uppercase;font-weight:600;padding:7px 11px;border-radius:999px;cursor:pointer;
+    background:transparent;color:var(--muted-2);border:1px solid var(--line-bright)}
+  .d-kind button.on{background:var(--accent-soft);border-color:var(--accent);color:#9dbcff}
+  .d-pri button[data-pri="1"].on{background:rgba(239,68,68,.16);border-color:rgba(239,68,68,.5);color:#ff9a8b}
+  .d-pri button[data-pri="2"].on{background:rgba(240,195,107,.14);border-color:rgba(240,195,107,.45);color:#f0c36b}
+  .d-pri button[data-pri="3"].on{background:#16161a;border-color:var(--line-bright);color:#fff}
+  #dNotes{flex:1;min-height:260px;resize:vertical;padding:13px 14px;border-radius:11px;
+    border:1px solid var(--line-bright);background:#0a0a0c;color:#e7e7ea;
+    font:400 14px/1.62 Inter,sans-serif;outline:0}
+  #dNotes:focus{border-color:var(--accent)}
+  .d-foot{border-top:1px solid var(--line);padding:12px 18px 16px}
+  .d-foot button{width:100%;padding:12px;border-radius:10px;cursor:pointer;font-weight:700;font-size:13.5px;
+    border:1px solid var(--line-bright);background:transparent;color:#fff}
+  .d-foot button.on{background:var(--accent);border-color:var(--accent)}
+
+  @media (max-width:560px){ .todo{width:100%} .todo-form textarea,.d-title,#dNotes{font-size:16px} }
 
   .overlay{position:fixed;inset:0;background:#000;z-index:40;display:none;flex-direction:column}
   .overlay.open{display:flex}
@@ -307,10 +356,41 @@
       <button type="button" data-kind="idea">Idea</button>
       <button type="button" data-kind="note">Note</button>
     </div>
+    <div class="todo-kinds todo-newpri">
+      <button type="button" data-pri="1">High</button>
+      <button type="button" class="on" data-pri="2">Medium</button>
+      <button type="button" data-pri="3">Low</button>
+    </div>
     <form class="todo-form" id="todoForm">
       <textarea id="todoText" rows="1" placeholder="Task, content idea, note&hellip;"></textarea>
       <button type="submit" aria-label="Add">+</button>
     </form>
+  </div>
+  <div class="todo-detail" id="todoDetail">
+    <div class="d-bar">
+      <button type="button" class="d-back">&larr; All</button>
+      <span class="d-when"></span>
+      <button type="button" class="d-del" id="dDel" aria-label="Delete">Delete</button>
+    </div>
+    <div class="d-body">
+      <textarea class="d-title" rows="1" placeholder="What is it?"></textarea>
+      <div class="d-row">
+        <div class="d-pri">
+          <button type="button" data-pri="1">High</button>
+          <button type="button" data-pri="2">Medium</button>
+          <button type="button" data-pri="3">Low</button>
+        </div>
+      </div>
+      <div class="d-row">
+        <div class="d-kind">
+          <button type="button" data-kind="task">Task</button>
+          <button type="button" data-kind="idea">Idea</button>
+          <button type="button" data-kind="note">Note</button>
+        </div>
+      </div>
+      <textarea id="dNotes" placeholder="Write it out in here &mdash; the script, the outline, the numbers, whatever the task actually needs."></textarea>
+    </div>
+    <div class="d-foot"><button type="button" id="dDone">Mark done</button></div>
   </div>
 </aside>
 
@@ -869,18 +949,28 @@
      Same list, same store as the phone app (site key td-todos), so whichever
      screen is nearest is the right one to write it down on. Local copy first
      so the drawer opens instantly; last write wins on sync — no merge, which
-     is what keeps one list from forking into two. */
+     is what keeps one list from forking into two.
+
+     An item is {id, text, kind, pri, notes, done, at, doneAt}. `pri` is 1..3,
+     high to low, and the list is ordered by it — the point of the list is what
+     to do next, not what you happened to type last. `notes` is the body: open
+     an item and the VSL script lives inside the task to film the VSL. Both
+     were added after the phone app shipped, so both are optional everywhere
+     and old items read as Medium with no notes. */
   const TODO_API   = 'https://jv-dashboard-chi.vercel.app/api/content?site=td-todos&page=1';
   const TODO_LOCAL = 'trtguy-todos';
+  const PRI = { 1:{label:'High', cls:'p1'}, 2:{label:'Medium', cls:'p2'}, 3:{label:'Low', cls:'p3'} };
   let todo = { items: [], updatedAt: 0 };
-  let todoKind = 'task', todoView = 'open', todoPushing = false;
+  let todoKind = 'task', todoPri = 2, todoView = 'open', todoPushing = false, todoOpenId = null;
 
   const $todo = document.getElementById('todo');
   const $todoList = document.getElementById('todoList');
   const $todoBtn = document.getElementById('todoBtn');
   const $todoText = document.getElementById('todoText');
+  const $detail = document.getElementById('todoDetail');
 
   function todoUid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+  function todoPriOf(it){ return PRI[it.pri] ? it.pri : 2; }          // old items: Medium
   function todoSync(cls, txt){
     document.getElementById('todoDot').className = cls;
     document.getElementById('todoSync').textContent = txt;
@@ -891,10 +981,10 @@
       if (v && Array.isArray(v.items)) todo = v;
     } catch (e) {}
   }
-  function todoSave(){
+  function todoSave(rerender){
     todo.updatedAt = Date.now();
     try { localStorage.setItem(TODO_LOCAL, JSON.stringify(todo)); } catch (e) {}
-    todoRender();
+    if (rerender !== false) todoRender();
     todoPush();
   }
   function todoPush(){
@@ -916,60 +1006,105 @@
           if (remote && Array.isArray(remote.items) && (remote.updatedAt||0) > (todo.updatedAt||0)) {
             todo = remote;
             try { localStorage.setItem(TODO_LOCAL, JSON.stringify(todo)); } catch (e) {}
-            todoRender();
+            // never yank the item out from under someone mid-sentence
+            if (!todoOpenId || !document.activeElement || !$detail.contains(document.activeElement)) todoRender();
           }
         }
         todoSync('on','synced');
       })
       .catch(() => todoSync('err','offline'));
   }
-  function todoDay(ts){
-    const d = new Date(ts), n = new Date();
-    const same = (a,b) => a.toDateString() === b.toDateString();
-    if (same(d,n)) return 'Today';
-    if (same(d, new Date(n.getTime() - 86400000))) return 'Yesterday';
-    return d.toLocaleDateString(undefined, { weekday:'short', day:'numeric', month:'short' });
-  }
+  function todoFind(id){ return todo.items.find(x => x.id === id); }
+
   function todoRender(){
-    const open = todo.items.filter(i => !i.done).sort((a,b) => b.at - a.at);
+    const open = todo.items.filter(i => !i.done);
     const done = todo.items.filter(i =>  i.done).sort((a,b) => (b.doneAt||b.at) - (a.doneAt||a.at));
     $todoBtn.classList.toggle('has', open.length > 0);
     document.getElementById('todoN').textContent = open.length;
+    if (todoOpenId) { todoPaintDetail(); return; }
 
-    const list = todoView === 'open' ? open : done;
-    if (!list.length) {
-      $todoList.innerHTML = todoView === 'open'
-        ? '<div class="todo-empty"><b>Nothing on the list</b>A task, an idea for content, or a note you don\'t want to lose.</div>'
-        : '<div class="todo-empty"><b>Nothing crossed off yet</b>Things you tick show up here.</div>';
-      return;
-    }
-    let html = '', lastDay = '';
+    if (todoView === 'done') return todoPaintRows(done, null,
+      '<b>Nothing crossed off yet</b>Things you tick show up here.');
+
+    // highest priority first, newest first inside a band
+    open.sort((a,b) => (todoPriOf(a) - todoPriOf(b)) || (b.at - a.at));
+    todoPaintRows(open, it => PRI[todoPriOf(it)].label,
+      '<b>Nothing on the list</b>A task, an idea for content, or a note you don\'t want to lose.');
+  }
+
+  function todoPaintRows(list, groupOf, empty){
+    if (!list.length) { $todoList.innerHTML = '<div class="todo-empty">' + empty + '</div>'; return; }
+    let html = '', last = null;
     list.forEach(it => {
-      const day = todoDay(it.at);
-      if (day !== lastDay) { html += '<div class="todo-day">' + day + '</div>'; lastDay = day; }
+      const g = groupOf ? groupOf(it) : null;
+      if (g && g !== last) { html += '<div class="todo-day">' + g + '</div>'; last = g; }
+      const p = todoPriOf(it);
       html += '<div class="ti' + (it.done ? ' done' : '') + '" data-id="' + it.id + '">' +
         '<button class="ck" type="button" aria-label="Done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></button>' +
-        '<div class="bd"><div class="tx"></div><span class="kd ' + it.kind + '">' + it.kind + '</span></div>' +
-        '<button class="rm" type="button" aria-label="Delete">&times;</button></div>';
+        '<div class="bd"><div class="tx"></div>' +
+          '<div class="mt"><span class="kd ' + it.kind + '">' + it.kind + '</span>' +
+          '<span class="pi ' + PRI[p].cls + '">' + PRI[p].label + '</span>' +
+          ((it.notes || '').trim() ? '<span class="nt">📝 notes</span>' : '') + '</div>' +
+        '</div>' +
+        '<button class="go" type="button" aria-label="Open">›</button></div>';
     });
     $todoList.innerHTML = html;
     // text goes in as textContent — a note can never inject markup into the dashboard
     const nodes = $todoList.querySelectorAll('.ti');
     list.forEach((it, i) => { if (nodes[i]) nodes[i].querySelector('.tx').textContent = it.text; });
   }
-  function todoOpen(on){
+
+  /* ── one item, opened ───────────────────────────────────────────────────── */
+  function todoShowDetail(id){
+    todoOpenId = id;
+    $todo.classList.add('detail');
+    todoPaintDetail();
+    setTimeout(() => { const n = document.getElementById('dNotes'); if (n) n.focus(); }, 190);
+  }
+  function todoCloseDetail(){
+    todoOpenId = null;
+    $todo.classList.remove('detail');
+    todoRender();
+  }
+  function todoPaintDetail(){
+    const it = todoFind(todoOpenId);
+    if (!it) return todoCloseDetail();
+    const p = todoPriOf(it);
+    $detail.querySelector('.d-title').value = it.text;
+    $detail.querySelector('#dNotes').value = it.notes || '';
+    $detail.querySelectorAll('.d-pri button').forEach(b => b.classList.toggle('on', +b.dataset.pri === p));
+    $detail.querySelectorAll('.d-kind button').forEach(b => b.classList.toggle('on', b.dataset.kind === it.kind));
+    const dn = $detail.querySelector('#dDone');
+    dn.classList.toggle('on', !!it.done);
+    dn.textContent = it.done ? '✓ Done' : 'Mark done';
+    $detail.querySelector('.d-when').textContent =
+      'Added ' + new Date(it.at).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'});
+    todoGrow($detail.querySelector('.d-title'));
+  }
+  function todoGrow(el){ el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+
+  let todoTypeTimer = null;
+  function todoTyped(){                    // debounced: one sync per pause, not per keystroke
+    clearTimeout(todoTypeTimer);
+    todoSync('', 'typing…');
+    todoTypeTimer = setTimeout(() => todoSave(false), 700);
+  }
+
+  function todoOpenDrawer(on){
     $todo.classList.toggle('open', on);
     document.getElementById('todoScrim').classList.toggle('open', on);
     $todoBtn.classList.toggle('on', on);
-    if (on) { todoPull(); setTimeout(() => $todoText.focus(), 210); }
+    if (on) { todoPull(); if (!todoOpenId) setTimeout(() => $todoText.focus(), 210); }
   }
 
-  $todoBtn.addEventListener('click', () => todoOpen(!$todo.classList.contains('open')));
-  document.getElementById('todoClose').addEventListener('click', () => todoOpen(false));
-  document.getElementById('todoScrim').addEventListener('click', () => todoOpen(false));
+  $todoBtn.addEventListener('click', () => todoOpenDrawer(!$todo.classList.contains('open')));
+  document.getElementById('todoClose').addEventListener('click', () => todoOpenDrawer(false));
+  document.getElementById('todoScrim').addEventListener('click', () => todoOpenDrawer(false));
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && $todo.classList.contains('open')) todoOpen(false);
+    if (e.key !== 'Escape' || !$todo.classList.contains('open')) return;
+    if (todoOpenId) todoCloseDetail(); else todoOpenDrawer(false);
   });
+
   $todo.addEventListener('click', e => {
     const seg = e.target.closest('.todo-seg button');
     if (seg) {
@@ -977,19 +1112,50 @@
       $todo.querySelectorAll('.todo-seg button').forEach(b => b.classList.toggle('on', b === seg));
       todoRender(); return;
     }
+    const np = e.target.closest('.todo-newpri button');
+    if (np) {
+      todoPri = +np.dataset.pri;
+      $todo.querySelectorAll('.todo-newpri button').forEach(b => b.classList.toggle('on', b === np));
+      return;
+    }
     const k = e.target.closest('.todo-kinds button');
     if (k) {
       todoKind = k.dataset.kind;
-      $todo.querySelectorAll('.todo-kinds button').forEach(b => b.classList.toggle('on', b === k));
+      $todo.querySelectorAll('.todo-kinds:not(.todo-newpri) button').forEach(b => b.classList.toggle('on', b === k));
       return;
     }
-    const row = e.target.closest('.ti'); if (!row) return;
-    const it = todo.items.find(x => x.id === row.dataset.id); if (!it) return;
-    if (e.target.closest('.ck')) { it.done = !it.done; it.doneAt = Date.now(); todoSave(); }
-    else if (e.target.closest('.rm')) {
-      todo.items = todo.items.filter(x => x.id !== it.id); todoSave();
+    const row = e.target.closest('.ti');
+    if (row) {
+      const it = todoFind(row.dataset.id); if (!it) return;
+      if (e.target.closest('.ck')) { it.done = !it.done; it.doneAt = Date.now(); todoSave(); }
+      else todoShowDetail(it.id);
+      return;
+    }
+    // ── inside the open item ──
+    if (e.target.closest('.d-back')) return todoCloseDetail();
+    const it = todoFind(todoOpenId); if (!it) return;
+    const dp = e.target.closest('.d-pri button');
+    if (dp) { it.pri = +dp.dataset.pri; todoSave(); todoPaintDetail(); return; }
+    const dk = e.target.closest('.d-kind button');
+    if (dk) { it.kind = dk.dataset.kind; todoSave(); todoPaintDetail(); return; }
+    if (e.target.closest('#dDone')) { it.done = !it.done; it.doneAt = Date.now(); todoSave(); todoPaintDetail(); return; }
+    if (e.target.closest('#dDel')) {
+      if (!confirm('Delete this one? The notes go with it.')) return;
+      todo.items = todo.items.filter(x => x.id !== it.id);
+      todoOpenId = null; $todo.classList.remove('detail');
+      todoSave(); return;
     }
   });
+
+  $detail.querySelector('.d-title').addEventListener('input', e => {
+    const it = todoFind(todoOpenId); if (!it) return;
+    it.text = e.target.value; todoGrow(e.target); todoTyped();
+  });
+  document.getElementById('dNotes').addEventListener('input', e => {
+    const it = todoFind(todoOpenId); if (!it) return;
+    it.notes = e.target.value; todoTyped();
+  });
+
   $todoText.addEventListener('input', () => {
     $todoText.style.height = 'auto';
     $todoText.style.height = Math.min($todoText.scrollHeight, 130) + 'px';
@@ -1000,7 +1166,7 @@
   document.getElementById('todoForm').addEventListener('submit', e => {
     e.preventDefault();
     const text = $todoText.value.trim(); if (!text) return;
-    todo.items.push({ id: todoUid(), text, kind: todoKind, done:false, at: Date.now() });
+    todo.items.push({ id: todoUid(), text, kind: todoKind, pri: todoPri, notes:'', done:false, at: Date.now() });
     $todoText.value = ''; $todoText.style.height = 'auto';
     if (todoView !== 'open') {
       todoView = 'open';
