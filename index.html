@@ -262,7 +262,59 @@
     border:1px solid var(--line-bright);background:transparent;color:#fff}
   .d-foot button.on{background:var(--accent);border-color:var(--accent)}
 
-  @media (max-width:560px){ .todo{width:100%} .todo-form textarea,.d-title,#dNotes{font-size:16px} }
+  /* ── Inbox ───────────────────────────────────────────────────────────────
+     Reuses the drawer the to-do list already established, one size wider,
+     because a conversation needs more room than a line of text. */
+  .todo.inbox{width:min(540px,100%)}
+  .in-gate{padding:20px 18px;display:none;flex-direction:column;gap:12px}
+  .todo.inbox.locked .in-gate{display:flex}
+  .in-gate p{margin:0;font-size:13.5px;color:var(--muted);line-height:1.6}
+  .in-gate form{display:flex;gap:8px}
+  .in-gate input{flex:1;background:#0a0a0c;border:1px solid var(--line-bright);border-radius:9px;color:#fff;
+    padding:11px 13px;font:500 15px Inter,sans-serif;outline:0}
+  .in-gate input:focus{border-color:var(--accent)}
+  .in-gate button{border:0;border-radius:9px;background:var(--accent);color:#fff;cursor:pointer;
+    font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:0 16px}
+  .in-err{font-size:12.5px;color:#ff9a8b;min-height:16px}
+
+  .in-filters{padding:12px 18px 0}
+  .cv{display:flex;gap:11px;align-items:flex-start;padding:12px 13px;margin-bottom:7px;cursor:pointer;
+    background:var(--panel-2);border:1px solid var(--line);border-radius:11px}
+  .cv:hover{border-color:var(--line-bright)}
+  .cv.unread{border-color:rgba(26,92,255,.45);background:rgba(26,92,255,.06)}
+  .cv .av{flex:none;width:34px;height:34px;border-radius:50%;background:#1c1c22;color:#cfd8ff;
+    display:flex;align-items:center;justify-content:center;font:700 13px Inter,sans-serif}
+  .cv .bd{flex:1;min-width:0}
+  .cv .nm{display:flex;align-items:center;gap:7px}
+  .cv .nm b{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cv .ago{flex:none;margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9px;
+    letter-spacing:.1em;color:var(--muted-2);white-space:nowrap}
+  .cv .pv{margin-top:4px;font-size:13px;line-height:1.45;color:var(--muted);
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .cv .pv i{font-style:normal;color:var(--muted-2)}
+  .ch{font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.13em;text-transform:uppercase;
+    padding:3px 6px;border-radius:5px;background:#141417;color:var(--muted-2)}
+  .ch.email{color:#9dbcff;background:var(--accent-soft)}
+  .ch.ig{color:#f7a8d8;background:rgba(247,168,216,.12)}
+  .ch.sms{color:#a7f3d0;background:rgba(167,243,208,.1)}
+  .ch.fb{color:#8ab4ff;background:rgba(138,180,255,.12)}
+  .cv .un{flex:none;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+
+  .in-msgs{flex:1;overflow:auto;padding:16px 18px;display:flex;flex-direction:column;gap:9px}
+  .bub{max-width:82%;padding:10px 13px;border-radius:14px;font-size:14px;line-height:1.5;
+    white-space:pre-wrap;word-wrap:break-word}
+  .bub.in{align-self:flex-start;background:var(--panel-2);border:1px solid var(--line);border-bottom-left-radius:5px}
+  .bub.out{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:5px}
+  .bub .st{display:block;margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:8.5px;
+    letter-spacing:.11em;text-transform:uppercase;opacity:.62}
+  .in-reply{border-top:1px solid var(--line);padding:11px 18px 16px}
+  .in-on{margin-bottom:8px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--muted-2)}
+  #inText{font-size:14px}
+  .in-msgs .todo-empty{margin:auto}
+
+  @media (max-width:560px){ .todo{width:100%} .todo.inbox{width:100%}
+    .todo-form textarea,.d-title,#dNotes,#inText,.in-gate input{font-size:16px} }
 
   .overlay{position:fixed;inset:0;background:#000;z-index:40;display:none;flex-direction:column}
   .overlay.open{display:flex}
@@ -306,6 +358,7 @@
 <header class="topbar">
   <a href="#" class="brand"><span class="dot"></span>TRT<span class="slash">/</span>GUY</a>
   <div class="right">
+    <button type="button" class="todo-btn" id="inboxBtn">📥 Inbox<span class="n" id="inboxN">0</span></button>
     <button type="button" class="todo-btn" id="todoBtn">📝 To-do<span class="n" id="todoN">0</span></button>
     <span>Control Center</span>
   </div>
@@ -391,6 +444,48 @@
       <textarea id="dNotes" placeholder="Write it out in here &mdash; the script, the outline, the numbers, whatever the task actually needs."></textarea>
     </div>
     <div class="d-foot"><button type="button" id="dDone">Mark done</button></div>
+  </div>
+</aside>
+
+<aside class="todo inbox" id="inbox" aria-label="Inbox">
+  <div class="todo-head">
+    <h2>Inbox</h2>
+    <span class="todo-sync"><i id="inDot"></i><span id="inSync">&mdash;</span></span>
+    <button type="button" class="todo-x" id="inClose" aria-label="Close">&times;</button>
+  </div>
+
+  <div class="in-gate" id="inGate">
+    <p>This one shows real conversations with real leads, so it sits behind a passcode.</p>
+    <form id="inGateForm">
+      <input type="password" id="inKey" placeholder="Passcode" autocomplete="current-password">
+      <button type="submit">Unlock</button>
+    </form>
+    <span class="in-err" id="inGateErr"></span>
+  </div>
+
+  <div class="todo-seg in-filters" id="inFilters" hidden>
+    <button type="button" class="on" data-ch="">All</button>
+    <button type="button" data-ch="email">Email</button>
+    <button type="button" data-ch="ig">IG</button>
+    <button type="button" data-ch="sms">SMS</button>
+  </div>
+  <div class="todo-list" id="inList" hidden></div>
+
+  <div class="todo-detail" id="inThread">
+    <div class="d-bar">
+      <button type="button" class="d-back in-back">&larr; All</button>
+      <span class="d-when" id="inWho"></span>
+      <a class="d-del" id="inGhl" href="#" target="_blank" rel="noopener">Open in GHL</a>
+    </div>
+    <div class="in-msgs" id="inMsgs"></div>
+    <div class="in-reply">
+      <div class="in-on" id="inOn"></div>
+      <form class="todo-form" id="inForm">
+        <textarea id="inText" rows="1" placeholder="Reply&hellip;"></textarea>
+        <button type="submit" aria-label="Send">&uarr;</button>
+      </form>
+      <span class="in-err" id="inErr"></span>
+    </div>
   </div>
 </aside>
 
@@ -1092,14 +1187,19 @@
 
   function todoOpenDrawer(on){
     $todo.classList.toggle('open', on);
-    document.getElementById('todoScrim').classList.toggle('open', on);
+    const inboxUp = document.getElementById('inbox').classList.contains('open');
+    document.getElementById('todoScrim').classList.toggle('open', on || inboxUp);
     $todoBtn.classList.toggle('on', on);
     if (on) { todoPull(); if (!todoOpenId) setTimeout(() => $todoText.focus(), 210); }
   }
 
-  $todoBtn.addEventListener('click', () => todoOpenDrawer(!$todo.classList.contains('open')));
+  $todoBtn.addEventListener('click', () => {
+    const on = !$todo.classList.contains('open');
+    if (on && document.getElementById('inbox').classList.contains('open')) inDrawer(false);
+    todoOpenDrawer(on);
+  });
   document.getElementById('todoClose').addEventListener('click', () => todoOpenDrawer(false));
-  document.getElementById('todoScrim').addEventListener('click', () => todoOpenDrawer(false));
+
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape' || !$todo.classList.contains('open')) return;
     if (todoOpenId) todoCloseDetail(); else todoOpenDrawer(false);
@@ -1179,6 +1279,206 @@
   todoLoadLocal();
   todoRender();
   todoPull();
+
+  /* ── Inbox ────────────────────────────────────────────────────────────────
+     GoHighLevel is the system of record for every conversation — email, IG,
+     SMS. This reads and replies through it rather than keeping its own copy,
+     so a reply sent here is in the same thread GHL shows on the phone.
+
+     The GHL token never reaches this page. Everything goes through the proxy
+     on trt-guy-site, which holds the token server-side and demands a passcode,
+     because a lead's phone number has no business being on a public URL. */
+  const IN_API = 'https://trt-guy-site.vercel.app/api/inbox';
+  const IN_KEY = 'trtguy-cc-key';
+  const CH = { email:'Email', ig:'Instagram', sms:'SMS', fb:'Facebook', wa:'WhatsApp', chat:'Chat', other:'Other' };
+
+  const $in = document.getElementById('inbox');
+  const $inList = document.getElementById('inList');
+  const $inBtn = document.getElementById('inboxBtn');
+  let inKey = '';
+  let inConvos = [], inFilter = '', inOpen = null, inTimer = null;
+
+  try { inKey = localStorage.getItem(IN_KEY) || ''; } catch (e) {}
+
+  function inSay(cls, txt){
+    document.getElementById('inDot').className = cls;
+    document.getElementById('inSync').textContent = txt;
+  }
+  function inCall(qs, body){
+    return fetch(IN_API + '?' + qs, {
+      method: body ? 'POST' : 'GET',
+      headers: Object.assign({ 'X-CC-Key': inKey }, body ? {'Content-Type':'application/json'} : {}),
+      body: body ? JSON.stringify(body) : undefined,
+    }).then(r => r.json().then(j => ({ ok: r.ok, status: r.status, j })));
+  }
+  function inAgo(ts){
+    if (!ts) return '';
+    const s = Math.max(0, (Date.now() - new Date(ts).getTime()) / 1000);
+    if (s < 90) return 'now';
+    if (s < 3600) return Math.round(s/60) + 'm';
+    if (s < 86400) return Math.round(s/3600) + 'h';
+    if (s < 604800) return Math.round(s/86400) + 'd';
+    return new Date(ts).toLocaleDateString(undefined,{day:'numeric',month:'short'});
+  }
+  function inInitial(n){ return (n || '?').trim().charAt(0).toUpperCase() || '?'; }
+
+  function inLoad(quiet){
+    if (!inKey) return;
+    if (!quiet) inSay('', 'loading…');
+    inCall('action=list&limit=30').then(r => {
+      if (r.status === 401) { inLock('That passcode was not it.'); return; }
+      if (!r.ok) { inSay('err', 'GHL error'); return; }
+      inConvos = r.j.conversations || [];
+      inUnlock();
+      inPaintList();
+      const unread = inConvos.filter(c => c.unread > 0).length;
+      $inBtn.classList.toggle('has', unread > 0);
+      document.getElementById('inboxN').textContent = unread;
+      inSay('on', 'synced');
+      if (inOpen) inPaintThread();
+    }).catch(() => inSay('err','offline'));
+  }
+  function inLock(msg){
+    $in.classList.add('locked');
+    document.getElementById('inFilters').hidden = true;
+    $inList.hidden = true;
+    document.getElementById('inGateErr').textContent = msg || '';
+    inSay('err', 'locked');
+  }
+  function inUnlock(){
+    $in.classList.remove('locked');
+    document.getElementById('inFilters').hidden = false;
+    $inList.hidden = false;
+  }
+
+  function inPaintList(){
+    const rows = inFilter ? inConvos.filter(c => c.channel === inFilter) : inConvos;
+    if (!rows.length) {
+      $inList.innerHTML = '<div class="todo-empty"><b>Nothing here</b>' +
+        (inFilter ? 'No ' + CH[inFilter] + ' conversations in the last 30.' : 'No conversations came back from GoHighLevel.') + '</div>';
+      return;
+    }
+    $inList.innerHTML = rows.map(c =>
+      '<div class="cv' + (c.unread ? ' unread' : '') + '" data-id="' + c.id + '">' +
+        '<div class="av"></div>' +
+        '<div class="bd"><div class="nm"><b></b>' +
+          '<span class="ch ' + c.channel + '">' + (CH[c.channel] || c.channel) + '</span>' +
+          (c.unread ? '<span class="un"></span>' : '') +
+          '<span class="ago">' + inAgo(c.at) + '</span></div>' +
+          '<div class="pv">' + (c.direction === 'outbound' ? '<i>You: </i>' : '') + '<span class="pvt"></span></div>' +
+        '</div></div>').join('');
+    // names and previews are other people's words — never build them into HTML
+    const nodes = $inList.querySelectorAll('.cv');
+    rows.forEach((c, i) => {
+      if (!nodes[i]) return;
+      nodes[i].querySelector('.av').textContent = inInitial(c.name);
+      nodes[i].querySelector('.nm b').textContent = c.name;
+      nodes[i].querySelector('.pvt').textContent = c.preview || '(no text)';
+    });
+  }
+
+  function inShow(id){
+    inOpen = inConvos.find(c => c.id === id) || null;
+    if (!inOpen) return;
+    $in.classList.add('detail');
+    document.getElementById('inWho').textContent = inOpen.name;
+    document.getElementById('inGhl').href =
+      'https://app.gohighlevel.com/v2/location/' + 'WmcafLXT7njeQOu3fqlP' + '/conversations/conversations/' + inOpen.id;
+    document.getElementById('inOn').textContent = 'Replying on ' + (CH[inOpen.channel] || inOpen.channel);
+    document.getElementById('inErr').textContent = '';
+    document.getElementById('inMsgs').innerHTML = '<div class="todo-empty">Loading…</div>';
+    inPaintThread();
+  }
+  function inPaintThread(){
+    if (!inOpen) return;
+    inCall('action=thread&id=' + encodeURIComponent(inOpen.id)).then(r => {
+      const box = document.getElementById('inMsgs');
+      if (!r.ok) { box.innerHTML = '<div class="todo-empty"><b>Could not load it</b>' +
+        ((r.j && r.j.error) || 'GoHighLevel said no.') + '</div>'; return; }
+      const ms = r.j.messages || [];
+      if (!ms.length) { box.innerHTML = '<div class="todo-empty">No messages in this one.</div>'; return; }
+      box.innerHTML = ms.map(m =>
+        '<div class="bub ' + (m.inbound ? 'in' : 'out') + '"><span class="tx"></span>' +
+        '<span class="st">' + (CH[m.channel] || m.channel) + ' · ' + inAgo(m.at) +
+        (m.attachments ? ' · ' + m.attachments + ' attachment' + (m.attachments > 1 ? 's' : '') : '') +
+        '</span></div>').join('');
+      const nodes = box.querySelectorAll('.bub .tx');
+      ms.forEach((m, i) => { if (nodes[i]) nodes[i].textContent = m.body || '(no text)'; });
+      box.scrollTop = box.scrollHeight;
+    });
+  }
+  function inClose(){ inOpen = null; $in.classList.remove('detail'); }
+
+  function inDrawer(on){
+    $in.classList.toggle('open', on);
+    document.getElementById('todoScrim').classList.toggle('open', on || $todo.classList.contains('open'));
+    $inBtn.classList.toggle('on', on);
+    clearInterval(inTimer);
+    if (on) {
+      if ($todo.classList.contains('open')) todoOpenDrawer(false);
+      if (!inKey) inLock(''); else inLoad();
+      inTimer = setInterval(() => inLoad(true), 45000);       // GHL has no push to us
+    }
+  }
+
+  $inBtn.addEventListener('click', () => inDrawer(!$in.classList.contains('open')));
+  document.getElementById('inClose').addEventListener('click', () => inDrawer(false));
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape' || !$in.classList.contains('open')) return;
+    if (inOpen) inClose(); else inDrawer(false);
+  });
+  document.getElementById('inGateForm').addEventListener('submit', e => {
+    e.preventDefault();
+    inKey = document.getElementById('inKey').value.trim();
+    try { localStorage.setItem(IN_KEY, inKey); } catch (x) {}
+    document.getElementById('inGateErr').textContent = '';
+    inLoad();
+  });
+  $in.addEventListener('click', e => {
+    const f = e.target.closest('.in-filters button');
+    if (f) {
+      inFilter = f.dataset.ch;
+      $in.querySelectorAll('.in-filters button').forEach(b => b.classList.toggle('on', b === f));
+      inPaintList(); return;
+    }
+    if (e.target.closest('.in-back')) return inClose();
+    const cv = e.target.closest('.cv');
+    if (cv) inShow(cv.dataset.id);
+  });
+
+  const $inText = document.getElementById('inText');
+  $inText.addEventListener('input', () => {
+    $inText.style.height = 'auto';
+    $inText.style.height = Math.min($inText.scrollHeight, 130) + 'px';
+  });
+  document.getElementById('inForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const text = $inText.value.trim();
+    if (!text || !inOpen) return;
+    const err = document.getElementById('inErr');
+    err.textContent = ''; inSay('', 'sending…');
+    inCall('action=send', { contactId: inOpen.contactId, conversationId: inOpen.id,
+      channel: inOpen.channel, text, subject: 'Re: your message' })
+      .then(r => {
+        if (!r.ok) {
+          // Instagram and Facebook refuse a reply more than 24 hours after
+          // theirs; SMS needs a number on the location. Say which it was.
+          err.textContent = (r.j && r.j.error) || 'It did not send.';
+          inSay('err', 'not sent'); return;
+        }
+        $inText.value = ''; $inText.style.height = 'auto';
+        inSay('on', 'sent');
+        inPaintThread(); inLoad(true);
+      })
+      .catch(() => { err.textContent = 'No connection.'; inSay('err','offline'); });
+  });
+  window.addEventListener('focus', () => { if ($in.classList.contains('open')) inLoad(true); });
+
+  // the two drawers share one scrim, so closing it has to close whichever is up
+  document.getElementById('todoScrim').addEventListener('click', () => {
+    todoOpenDrawer(false); inDrawer(false);
+  });
+  if (inKey) inLoad(true);          // badge count on load, without opening anything
 
   buildEditUrls();
   paintLock();
