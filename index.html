@@ -313,8 +313,48 @@
   #inText{font-size:14px}
   .in-msgs .todo-empty{margin:auto}
 
+  .in-new{border:1px solid var(--line-bright);background:transparent;color:var(--muted);cursor:pointer;
+    font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;
+    padding:7px 10px;border-radius:7px;white-space:nowrap}
+  .in-new:hover{color:#fff;border-color:#fff}
+  .in-on{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .in-ch{display:flex;gap:5px}
+  .in-ch button{font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.12em;
+    text-transform:uppercase;font-weight:600;padding:5px 9px;border-radius:999px;cursor:pointer;
+    background:transparent;color:var(--muted-2);border:1px solid var(--line-bright)}
+  .in-ch button.on{background:var(--accent-soft);border-color:var(--accent);color:#9dbcff}
+  .in-subj{width:100%;margin-bottom:8px;background:#0a0a0c;border:1px solid var(--line-bright);
+    border-radius:9px;color:#fff;padding:9px 12px;font:500 13.5px Inter,sans-serif;outline:0}
+  .in-subj:focus{border-color:var(--accent)}
+
+  .todo.compose .in-compose{transform:none;visibility:visible}
+  .todo.compose .todo-seg,.todo.compose .todo-add{visibility:hidden}
+  .cm-body{flex:1;overflow:auto;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+  .cm-to{position:relative;flex:none}
+  .cm-body input,.cm-body textarea{width:100%;background:#0a0a0c;border:1px solid var(--line-bright);
+    border-radius:10px;color:#fff;padding:11px 13px;font:400 14px/1.5 Inter,sans-serif;outline:0}
+  .cm-body input:focus,.cm-body textarea:focus{border-color:var(--accent)}
+  .cm-body textarea{flex:1;min-height:240px;resize:vertical;line-height:1.62}
+  .cm-hits{position:absolute;top:100%;left:0;right:0;z-index:3;margin-top:5px;max-height:210px;overflow:auto;
+    background:var(--panel-2);border:1px solid var(--line-bright);border-radius:10px;
+    box-shadow:0 16px 40px rgba(0,0,0,.6)}
+  .cm-hits div{padding:10px 13px;cursor:pointer;font-size:13.5px;border-bottom:1px solid var(--line)}
+  .cm-hits div:last-child{border-bottom:0}
+  .cm-hits div:hover{background:var(--accent-soft)}
+  .cm-hits b{display:block;font-weight:600}
+  .cm-hits span{color:var(--muted-2);font-size:12px}
+  .cm-picked{display:flex;align-items:center;gap:9px;padding:10px 13px;border-radius:10px;
+    background:var(--accent-soft);border:1px solid rgba(26,92,255,.4);font-size:13.5px}
+  .cm-picked span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cm-picked button{border:0;background:none;color:var(--muted);font-size:18px;cursor:pointer;padding:0 2px}
+  .in-compose .d-foot{display:flex;align-items:center;gap:12px}
+  .in-compose .d-foot .in-err{flex:1;min-height:0}
+  .in-compose .d-foot button{width:auto;flex:none;padding:12px 22px;background:var(--accent);
+    border-color:var(--accent)}
+
   @media (max-width:560px){ .todo{width:100%} .todo.inbox{width:100%}
-    .todo-form textarea,.d-title,#dNotes,#inText,.in-gate input{font-size:16px} }
+    .todo-form textarea,.d-title,#dNotes,#inText,.in-gate input,
+    .in-subj,.cm-body input,.cm-body textarea{font-size:16px} }
 
   .overlay{position:fixed;inset:0;background:#000;z-index:40;display:none;flex-direction:column}
   .overlay.open{display:flex}
@@ -451,6 +491,7 @@
   <div class="todo-head">
     <h2>Inbox</h2>
     <span class="todo-sync"><i id="inDot"></i><span id="inSync">&mdash;</span></span>
+    <button type="button" class="in-new" id="inNew" title="Write an email">&#9998; New</button>
     <button type="button" class="todo-x" id="inClose" aria-label="Close">&times;</button>
   </div>
 
@@ -471,6 +512,27 @@
   </div>
   <div class="todo-list" id="inList" hidden></div>
 
+  <div class="todo-detail in-compose" id="inCompose">
+    <div class="d-bar">
+      <button type="button" class="d-back cm-back">&larr; Inbox</button>
+      <span class="d-when">New email</span>
+      <span style="width:64px"></span>
+    </div>
+    <div class="cm-body">
+      <div class="cm-to">
+        <input type="text" id="cmTo" placeholder="Name or email address" autocomplete="off">
+        <div class="cm-hits" id="cmHits" hidden></div>
+        <div class="cm-picked" id="cmPicked" hidden><span></span><button type="button" id="cmClear" aria-label="Clear">&times;</button></div>
+      </div>
+      <input type="text" id="cmSubj" placeholder="Subject">
+      <textarea id="cmText" placeholder="Write it&hellip;"></textarea>
+    </div>
+    <div class="d-foot">
+      <span class="in-err" id="cmErr"></span>
+      <button type="button" id="cmSend">Send email</button>
+    </div>
+  </div>
+
   <div class="todo-detail" id="inThread">
     <div class="d-bar">
       <button type="button" class="d-back in-back">&larr; All</button>
@@ -479,7 +541,8 @@
     </div>
     <div class="in-msgs" id="inMsgs"></div>
     <div class="in-reply">
-      <div class="in-on" id="inOn"></div>
+      <div class="in-on"><span id="inOn"></span><span class="in-ch" id="inCh"></span></div>
+      <input type="text" id="inSubj" class="in-subj" placeholder="Subject" hidden>
       <form class="todo-form" id="inForm">
         <textarea id="inText" rows="1" placeholder="Reply&hellip;"></textarea>
         <button type="submit" aria-label="Send">&uarr;</button>
@@ -1296,7 +1359,7 @@
   const $inList = document.getElementById('inList');
   const $inBtn = document.getElementById('inboxBtn');
   let inKey = '';
-  let inConvos = [], inFilter = '', inOpen = null, inTimer = null;
+  let inConvos = [], inFilter = '', inOpen = null, inTimer = null, inSendOn = '';
 
   try { inKey = localStorage.getItem(IN_KEY) || ''; } catch (e) {}
 
@@ -1380,18 +1443,43 @@
   function inShow(id){
     inOpen = inConvos.find(c => c.id === id) || null;
     if (!inOpen) return;
+    inSendOn = inOpen.channel;                 // default: answer where they wrote
     $in.classList.add('detail');
     document.getElementById('inWho').textContent = inOpen.name;
     document.getElementById('inGhl').href =
       'https://app.gohighlevel.com/v2/location/' + 'WmcafLXT7njeQOu3fqlP' + '/conversations/conversations/' + inOpen.id;
-    document.getElementById('inOn').textContent = 'Replying on ' + (CH[inOpen.channel] || inOpen.channel);
     document.getElementById('inErr').textContent = '';
     document.getElementById('inMsgs').innerHTML = '<div class="todo-empty">Loading…</div>';
+    inPaintChannels(inOpen.can || [inOpen.channel]);
     inPaintThread();
+  }
+
+  /* Answering an Instagram lead by email is a real move — but only when GHL
+     actually has an email for them, so the row is built from what the contact
+     record says, not from what's convenient. */
+  function inPaintChannels(can){
+    const list = (can || []).filter(c => ['email','sms','ig','fb','wa','chat'].includes(c));
+    if (!list.length) list.push(inOpen.channel);
+    if (!list.includes(inSendOn)) inSendOn = list[0];
+    document.getElementById('inOn').textContent = list.length > 1 ? 'Reply on' : 'Replying on';
+    document.getElementById('inCh').innerHTML = list.map(c =>
+      '<button type="button" data-ch="' + c + '"' + (c === inSendOn ? ' class="on"' : '') + '>' +
+      (CH[c] || c) + '</button>').join('');
+    document.getElementById('inSubj').hidden = inSendOn !== 'email';
   }
   function inPaintThread(){
     if (!inOpen) return;
-    inCall('action=thread&id=' + encodeURIComponent(inOpen.id)).then(r => {
+    inCall('action=thread&id=' + encodeURIComponent(inOpen.id) +
+           '&contactId=' + encodeURIComponent(inOpen.contactId || '')).then(r => {
+      // the contact record knows every address; the conversation only knows one
+      if (r.ok && r.j.contact) {
+        const can = [];
+        if (r.j.contact.email) can.push('email');
+        if (r.j.contact.phone) can.push('sms');
+        if (!can.includes(inOpen.channel)) can.push(inOpen.channel);
+        inOpen.can = can;
+        inPaintChannels(can);
+      }
       const box = document.getElementById('inMsgs');
       if (!r.ok) { box.innerHTML = '<div class="todo-empty"><b>Could not load it</b>' +
         ((r.j && r.j.error) || 'GoHighLevel said no.') + '</div>'; return; }
@@ -1441,7 +1529,16 @@
       $in.querySelectorAll('.in-filters button').forEach(b => b.classList.toggle('on', b === f));
       inPaintList(); return;
     }
+    const chb = e.target.closest('.in-ch button');
+    if (chb) {
+      inSendOn = chb.dataset.ch;
+      $in.querySelectorAll('.in-ch button').forEach(b => b.classList.toggle('on', b === chb));
+      document.getElementById('inSubj').hidden = inSendOn !== 'email';
+      document.getElementById('inErr').textContent = '';
+      return;
+    }
     if (e.target.closest('.in-back')) return inClose();
+    if (e.target.closest('.cm-back')) { $in.classList.remove('compose'); return; }
     const cv = e.target.closest('.cv');
     if (cv) inShow(cv.dataset.id);
   });
@@ -1457,8 +1554,10 @@
     if (!text || !inOpen) return;
     const err = document.getElementById('inErr');
     err.textContent = ''; inSay('', 'sending…');
+    const subj = document.getElementById('inSubj').value.trim();
     inCall('action=send', { contactId: inOpen.contactId, conversationId: inOpen.id,
-      channel: inOpen.channel, text, subject: 'Re: your message' })
+      channel: inSendOn || inOpen.channel, text,
+      subject: subj || ('Re: ' + (inOpen.name || 'your message')) })
       .then(r => {
         if (!r.ok) {
           // Instagram and Facebook refuse a reply more than 24 hours after
@@ -1467,11 +1566,79 @@
           inSay('err', 'not sent'); return;
         }
         $inText.value = ''; $inText.style.height = 'auto';
+        document.getElementById('inSubj').value = '';
         inSay('on', 'sent');
         inPaintThread(); inLoad(true);
       })
       .catch(() => { err.textContent = 'No connection.'; inSay('err','offline'); });
   });
+  /* ── Compose ──────────────────────────────────────────────────────────────
+     A first email to someone with no thread yet. Type-ahead over GHL contacts,
+     or a bare address — writing to an address that isn't in the CRM creates the
+     contact, which is the point: the reply has to land somewhere GHL can thread. */
+  let cmPick = null, cmTimer = null;
+  const $cmTo = document.getElementById('cmTo'), $cmHits = document.getElementById('cmHits');
+
+  function cmOpen(){
+    cmPick = null;
+    $cmTo.value = ''; document.getElementById('cmSubj').value = '';
+    document.getElementById('cmText').value = '';
+    document.getElementById('cmErr').textContent = '';
+    document.getElementById('cmPicked').hidden = true;
+    $cmTo.hidden = false; $cmHits.hidden = true;
+    $in.classList.add('compose');
+    setTimeout(() => $cmTo.focus(), 200);
+  }
+  function cmSet(c){
+    cmPick = c;
+    const box = document.getElementById('cmPicked');
+    box.querySelector('span').textContent = c.name + (c.email ? '  ·  ' + c.email : '');
+    box.hidden = false; $cmTo.hidden = true; $cmHits.hidden = true;
+    document.getElementById('cmSubj').focus();
+  }
+  $cmTo.addEventListener('input', () => {
+    clearTimeout(cmTimer);
+    const q = $cmTo.value.trim();
+    if (q.length < 2) { $cmHits.hidden = true; return; }
+    cmTimer = setTimeout(() => {
+      inCall('action=contacts&q=' + encodeURIComponent(q)).then(r => {
+        const hits = (r.ok && r.j.contacts) || [];
+        if (!hits.length) { $cmHits.hidden = true; return; }
+        $cmHits.innerHTML = hits.map(() => '<div><b></b><span></span></div>').join('');
+        // contact names come out of the CRM — set as text, never built into HTML
+        const nodes = $cmHits.querySelectorAll('div');
+        hits.forEach((c, i) => {
+          nodes[i].querySelector('b').textContent = c.name;
+          nodes[i].querySelector('span').textContent = c.email || c.phone;
+          nodes[i].addEventListener('click', () => cmSet(c));
+        });
+        $cmHits.hidden = false;
+      });
+    }, 260);
+  });
+  document.getElementById('cmClear').addEventListener('click', () => {
+    cmPick = null;
+    document.getElementById('cmPicked').hidden = true;
+    $cmTo.hidden = false; $cmTo.value = ''; $cmTo.focus();
+  });
+  document.getElementById('inNew').addEventListener('click', cmOpen);
+  document.getElementById('cmSend').addEventListener('click', () => {
+    const err = document.getElementById('cmErr');
+    const body = { subject: document.getElementById('cmSubj').value.trim(),
+                   text: document.getElementById('cmText').value.trim() };
+    if (cmPick) body.contactId = cmPick.id; else body.email = $cmTo.value.trim();
+    if (!body.subject) return err.textContent = 'Give it a subject.';
+    if (!body.text) return err.textContent = 'Nothing to send.';
+    if (!cmPick && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) return err.textContent = 'Pick a contact or type a real address.';
+    err.textContent = ''; inSay('', 'sending…');
+    inCall('action=compose', body).then(r => {
+      if (!r.ok) { err.textContent = (r.j && r.j.error) || 'It did not send.'; inSay('err','not sent'); return; }
+      inSay('on', 'sent');
+      $in.classList.remove('compose');
+      inLoad();                                  // the new thread shows up in the list
+    }).catch(() => { err.textContent = 'No connection.'; inSay('err','offline'); });
+  });
+
   window.addEventListener('focus', () => { if ($in.classList.contains('open')) inLoad(true); });
 
   // the two drawers share one scrim, so closing it has to close whichever is up
