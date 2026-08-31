@@ -902,7 +902,7 @@
     document.getElementById('subtitle').textContent = 'Each funnel and its pages, with what they\u2019re converting at.';
     document.getElementById('crumbSlot').innerHTML = '';
 
-    const groupCards = GROUPS.map(g => {
+    const groupCards = GROUPS.filter(g => !isArch('g:' + g.id)).map(g => {
       const r = rollupGroup(g), kids = inGroup(g.id);
       return '<div class="card folder" data-group="' + g.id + '">'
         + '<div class="cardtop"><span class="tag">' + g.tag + '</span>'
@@ -918,11 +918,13 @@
         + '</div>'
         + '<div class="actions">'
           + '<button type="button" class="btn" data-opengroup="' + g.id + '">Open \u2192</button>'
+          + archBtn('g:' + g.id)
         + '</div></div>';
     }).join('');
 
     document.getElementById('grid').innerHTML = groupCards
-      + PROJECTS.filter(pr => !pr.group).map(pr => projectCard(pr)).join('');
+      + PROJECTS.filter(pr => !pr.group && !isArch('p:' + pr.id)).map(pr => projectCard(pr)).join('')
+      + archPanel();
 
     document.querySelectorAll('.card.folder[data-group]').forEach(c => {
       c.addEventListener('click', e => { if (e.target.closest('a')) return; showGroup(c.dataset.group); });
@@ -930,6 +932,7 @@
     document.querySelectorAll('.card.folder[data-project]').forEach(c => {
       c.addEventListener('click', e => { if (e.target.closest('a')) return; showProject(c.dataset.project); });
     });
+    wireArch();
   }
 
   function projectCard(pr){
@@ -948,6 +951,7 @@
         + '<button type="button" class="btn" data-open="' + pr.id + '">Open \u2192</button>'
         + '<a class="btn ghost" href="' + entryUrl(pr) + '" target="_blank" rel="noopener">View live</a>'
         + '<button type="button" class="btn ghost copy" data-copy="' + entryUrl(pr) + '" title="Copy the opt-in link \u2014 the one you send people">Copy opt-in link \u29c9</button>'
+        + archBtn('p:' + pr.id)
       + '</div></div>';
   }
 
@@ -960,10 +964,11 @@
       + '<span class="where">Projects / <b>' + g.name + '</b></span></div>';
     document.getElementById('upBtn').addEventListener('click', showFolders);
 
-    document.getElementById('grid').innerHTML = inGroup(g.id).map(pr => projectCard(pr)).join('');
+    document.getElementById('grid').innerHTML = inGroup(g.id).filter(pr => !isArch('p:' + pr.id)).map(pr => projectCard(pr)).join('');
     document.querySelectorAll('.card.folder[data-project]').forEach(c => {
       c.addEventListener('click', e => { if (e.target.closest('a')) return; showProject(c.dataset.project); });
     });
+    wireArch();
   }
 
   function renderProject(pr){
@@ -1179,6 +1184,64 @@
       document.body.removeChild(ta); done();
     }
   });
+
+  /* ── Archive ──────────────────────────────────────────────────────────────
+     Hide funnels/folders you no longer use, without deleting anything. State
+     is a list of keys ("p:<projectId>" / "g:<groupId>") synced to the same
+     content store the to-do list uses (site key td-arch), so archiving on the
+     laptop hides it on the phone too. Local copy first for an instant paint;
+     last write wins on sync. Restore from the "Archived" panel any time. */
+  const ARCH_API   = 'https://jv-dashboard-chi.vercel.app/api/content?site=td-arch&page=1';
+  const ARCH_LOCAL = 'trtguy-arch';
+  let arch = { ids: [], updatedAt: 0 };
+  let archShow = false, archPushing = false;
+  function isArch(key){ return arch.ids.indexOf(key) !== -1; }
+  function archLoadLocal(){ try { const v = JSON.parse(localStorage.getItem(ARCH_LOCAL) || 'null'); if (v && Array.isArray(v.ids)) arch = v; } catch (e) {} }
+  function archSave(){
+    arch.updatedAt = Date.now();
+    try { localStorage.setItem(ARCH_LOCAL, JSON.stringify(arch)); } catch (e) {}
+    rerenderCurrent();
+    if (archPushing) return; archPushing = true;
+    fetch(ARCH_API, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ password:'', edits:[{ eid:'arch', html: JSON.stringify(arch) }] }) })
+      .catch(() => {}).then(() => { archPushing = false; });
+  }
+  function archPull(){
+    fetch(ARCH_API + '&t=' + Date.now(), { cache:'no-store' })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        const rec = d && Array.isArray(d.edits) && d.edits.find(e => e.eid === 'arch');
+        if (!rec || !rec.html) return;
+        try { const v = JSON.parse(rec.html);
+          if (v && Array.isArray(v.ids) && (v.updatedAt || 0) >= (arch.updatedAt || 0)) {
+            arch = v; try { localStorage.setItem(ARCH_LOCAL, JSON.stringify(arch)); } catch (e) {}
+            rerenderCurrent();
+          } } catch (e) {}
+      }).catch(() => {});
+  }
+  function archToggle(key){ const i = arch.ids.indexOf(key); if (i === -1) arch.ids.push(key); else arch.ids.splice(i, 1); archSave(); }
+  function rerenderCurrent(){ if (overlay.classList.contains('open')) return; if (openProject) renderProject(openProject); else if (openGroup) renderGroup(openGroup); else renderFolders(); }
+  function archBtn(key){ return '<button type="button" class="btn ghost" data-arch="' + key + '" title="Archive — hide from this dashboard (you can restore it)">Archive</button>'; }
+  function archPanel(){
+    const items = GROUPS.filter(g => isArch('g:' + g.id)).map(g => ({ key:'g:' + g.id, icon:g.icon, name:g.name, kind:'Folder' }))
+      .concat(PROJECTS.filter(pr => isArch('p:' + pr.id)).map(pr => ({ key:'p:' + pr.id, icon:pr.icon, name:pr.name, kind:'Funnel' })));
+    if (!items.length) return '';
+    return '<div class="card" style="grid-column:1/-1">'
+      + '<div class="actions" style="justify-content:space-between;align-items:center;margin:0">'
+        + '<div class="name" style="margin:0"><span>🗄️</span>Archived <span class="count">' + items.length + '</span></div>'
+        + '<button type="button" class="btn ghost" id="archToggleBtn">' + (archShow ? 'Hide' : 'Show') + '</button>'
+      + '</div>'
+      + (archShow ? '<div style="margin-top:12px">' + items.map(it =>
+          '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)">'
+          + '<span>' + it.icon + ' ' + it.name + ' <span class="count">' + it.kind + '</span></span>'
+          + '<button type="button" class="btn ghost" data-unarch="' + it.key + '">Restore</button></div>').join('') + '</div>' : '')
+      + '</div>';
+  }
+  function wireArch(){
+    document.querySelectorAll('[data-arch]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); archToggle(b.dataset.arch); }));
+    document.querySelectorAll('[data-unarch]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); archToggle(b.dataset.unarch); }));
+    const t = document.getElementById('archToggleBtn'); if (t) t.addEventListener('click', () => { archShow = !archShow; renderFolders(); });
+  }
 
   /* ── To-do ────────────────────────────────────────────────────────────────
      Same list, same store as the phone app (site key td-todos), so whichever
@@ -1781,12 +1844,15 @@
   paintLock();
   paintBaseline();
   paintMe();
+  archLoadLocal();
   const deepP = location.hash.match(/^#p\/(.+)$/);
   const deepG = location.hash.match(/^#g\/(.+)$/);
   if (deepP) showProject(deepP[1], true);
   else if (deepG) showGroup(deepG[1], true);
   else renderFolders();
   loadStats();
+  archPull();
+  window.addEventListener('focus', archPull);
 </script>
 
 </body>
