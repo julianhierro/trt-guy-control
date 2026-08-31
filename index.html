@@ -621,6 +621,49 @@
       ]
     },
     {
+      id:'waitlist', icon:'📝', tag:'Offer', name:'Coaching Waitlist',
+      description:'Two-step waitlist then a qualifying application. Tags coaching-waitlist then coaching-application.',
+      home:'https://trt-guy.com/waitlist/',
+      pages:[
+        { kind:'gate', key:'trtguy-waitlist', tags:["trt-guy", "coaching-waitlist", "coaching-application"], name:'Waitlist + Application',
+          description:'Join with name, email and phone, then the qualifying application questions. Saves the answers, drops a note, and emails you.',
+          url:'https://trt-guy.com/waitlist/' },
+        { kind:'thanks', key:'trtguy-waitlist-thanks', tags:[], name:'Thank You Page',
+          description:'Where applicants land after they apply.',
+          url:'https://trt-guy.com/waitlist/thanks/' }
+      ]
+    },
+    {
+      id:'startpage', icon:'🚪', tag:'Hub', name:'TRT 101 + Coaching',
+      description:'One page, two tabs — your TRT 101 opt-in and your coaching waitlist, each loaded as your real page.',
+      home:'https://trt-guy.com/start/',
+      pages:[
+        { kind:'gate', key:'trtguy-start', tags:[], name:'TRT 101 + Waitlist (2 tabs)',
+          description:'Tab 1 loads your /get opt-in, tab 2 loads your waitlist.',
+          url:'https://trt-guy.com/start/' }
+      ]
+    },
+    {
+      id:'protocol', icon:'💊', tag:'Draft', name:'My Current Protocol',
+      description:'Your protocol page — compounds, supplements, training, notes. Editable in the browser; not linked anywhere yet.',
+      home:'https://trt-guy.com/protocol/',
+      pages:[
+        { kind:'asset', key:'trtguy-protocol', tags:[], name:'My Current Protocol',
+          description:'What you are currently running. Edit it in the browser.',
+          url:'https://trt-guy.com/protocol/' }
+      ]
+    },
+    {
+      id:'onboarding', icon:'📋', tag:'Post-Purchase', name:'Client Onboarding',
+      description:'The full intake a new client completes right after they buy. Writes every answer onto their GHL contact.',
+      home:'https://onboarding.trt-guy.com/',
+      pages:[
+        { kind:'gate', key:'trtguy-onboarding', tags:["trt-guy", "client-onboarded"], name:'Onboarding Intake',
+          description:'The intake plus photo and bloodwork uploads. Writes answers and a note to the contact and emails you.',
+          url:'https://onboarding.trt-guy.com/' }
+      ]
+    },
+    {
       id:'quiz', group:'magnets', icon:'🩺', tag:'Lead Magnet', name:'Low-T Quiz',
       description:'The 10-question ADAM screen. Email captured before the result.',
       home:'https://julianhierro.github.io/trt-guy-quiz/',
