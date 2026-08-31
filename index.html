@@ -1001,6 +1001,7 @@
           + '<a class="btn ghost" href="' + p.url + '" target="_blank" rel="noopener">View live</a>'
           + '<button type="button" class="btn ghost copy" data-copy="' + p.url + '" title="Copy this page\u2019s own link">Copy link ⧉</button>'
           + (p.pdf ? '<a class="btn ghost" href="' + p.pdf + '" download>Download PDF ↓</a>' : '')
+          + '<button type="button" class="btn ghost resetstats" data-reset="' + p.key + '" data-name="' + (p.name || '').replace(/"/g, '&quot;') + '" title="Reset this page’s views, visitors and opt-ins to zero (revenue kept)">Reset stats ↺</button>'
         + '</div></div>';
     }).join('');
 
@@ -1165,6 +1166,25 @@
       ta.select(); var ok = false; try { ok = document.execCommand('copy'); } catch (x) {}
       document.body.removeChild(ta); done(ok);
     }
+  });
+
+  // reset a single page's counters (views/visitors/opt-ins). Revenue is left intact.
+  // Origin-guarded server-side; here we also require a typed confirmation before firing.
+  var RESET_API = 'https://jv-dashboard-chi.vercel.app/api/pageview';
+  document.addEventListener('click', function(e){
+    var b = e.target.closest('.btn.resetstats'); if (!b) return;
+    e.preventDefault(); e.stopPropagation();
+    var key = b.dataset.reset, nm = b.dataset.name || key, old = b.textContent;
+    if (!confirm('Reset stats for “' + nm + '”?\n\nThis zeroes its views, visitors, and opt-ins. Purchases and revenue are kept. This can’t be undone.')) return;
+    b.disabled = true; b.textContent = 'Resetting…';
+    fetch(RESET_API + '?t=reset&p=' + encodeURIComponent(key), { method:'POST' })
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(d){
+        if (d && d.ok) { b.textContent = 'Reset ✓'; loadStats(); }
+        else { b.textContent = 'Failed'; }
+        setTimeout(function(){ b.textContent = old; b.disabled = false; }, 1600);
+      })
+      .catch(function(){ b.textContent = 'Failed'; setTimeout(function(){ b.textContent = old; b.disabled = false; }, 1600); });
   });
 
   // copy a tag with one click, ready to paste into a GHL contact search
