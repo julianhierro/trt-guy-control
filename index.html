@@ -897,6 +897,27 @@
         + (cv == null ? '—' : cv.toFixed(1) + '%') + '</div></div>';
   }
 
+  // Quick links — the handful I send people most, with one-click copy (reuses the .btn.copy handler).
+  const QUICK_LINKS = [
+    { name:'Main site',           url:'https://trt-guy.com' },
+    { name:'TRT 101 — Opt-in',    url:'https://trt-guy.com/trt-101-guide/get/' },
+    { name:'Coaching Application', url:'https://trt-guy.com/coaching-application/' },
+    { name:'Coaching Waitlist',   url:'https://trt-guy.com/waitlist/' },
+    { name:'My Current Protocol', url:'https://trt-guy.com/protocol/' }
+  ];
+  function quickLinks(){
+    return '<div class="card" style="grid-column:1/-1">'
+      + '<div class="name" style="margin:0 0 4px"><span>🔗</span> Quick links</div>'
+      + '<p class="desc" style="margin:0 0 6px">The ones I send most — tap Copy and paste.</p>'
+      + QUICK_LINKS.map(l =>
+          '<div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line);flex-wrap:wrap">'
+          + '<span style="font-weight:700;min-width:168px">' + l.name + '</span>'
+          + '<a href="' + l.url + '" target="_blank" rel="noopener" style="flex:1;min-width:150px;color:var(--muted);font-size:13px;text-decoration:none;word-break:break-all">' + l.url.replace(/^https:\/\//, '') + '</a>'
+          + '<button type="button" class="btn ghost copy" data-copy="' + l.url + '">Copy ⧉</button>'
+          + '</div>').join('')
+      + '</div>';
+  }
+
   function renderFolders(){
     document.getElementById('title').textContent = 'Your projects';
     document.getElementById('subtitle').textContent = 'Each funnel and its pages, with what they\u2019re converting at.';
@@ -922,7 +943,7 @@
         + '</div></div>';
     }).join('');
 
-    document.getElementById('grid').innerHTML = groupCards
+    document.getElementById('grid').innerHTML = quickLinks() + groupCards
       + PROJECTS.filter(pr => !pr.group && !isArch('p:' + pr.id)).map(pr => projectCard(pr)).join('')
       + archPanel();
 
