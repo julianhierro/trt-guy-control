@@ -416,9 +416,9 @@
 <header class="topbar">
   <a href="#" class="brand"><img class="mark" src="icon-180.png" alt="" width="24" height="24">TRT<span class="slash">/</span>GUY</a>
   <div class="right">
-    <a class="todo-btn" href="/clients/" style="text-decoration:none">👥 Clients</a>
-    <button type="button" class="todo-btn" id="inboxBtn">📥 Inbox<span class="n" id="inboxN">0</span></button>
-    <button type="button" class="todo-btn" id="todoBtn">📝 To-do<span class="n" id="todoN">0</span></button>
+    <a class="todo-btn" href="/clients/" style="text-decoration:none">Clients</a>
+    <button type="button" class="todo-btn" id="inboxBtn">Inbox<span class="n" id="inboxN">0</span></button>
+    <button type="button" class="todo-btn" id="todoBtn">To-do<span class="n" id="todoN">0</span></button>
     <span>Control Center</span>
   </div>
 </header>
@@ -542,7 +542,7 @@
       <div class="cm-to">
         <input type="text" id="cmTo" placeholder="Name or email address" autocomplete="off">
         <div class="cm-hits" id="cmHits" hidden></div>
-        <div class="cm-picked" id="cmPicked" hidden><span></span><button type="button" id="cmClear" aria-label="Clear">&times;</button></div>
+        <div class="cm-picked" id="cmPicked" hidden><button type="button" id="cmClear" aria-label="Clear">&times;</button></div>
       </div>
       <input type="text" id="cmSubj" placeholder="Subject">
       <textarea id="cmText" placeholder="Write it&hellip;"></textarea>
@@ -579,9 +579,9 @@
     <div class="left">
       <button type="button" class="back" id="backBtn">← Back</button>
       <div class="dev" id="dev">
-        <button type="button" data-w="0" class="on">💻 Desktop</button>
-        <button type="button" data-w="834">📲 Tablet</button>
-        <button type="button" data-w="390">📱 Mobile</button>
+        <button type="button" data-w="0" class="on">Desktop</button>
+        <button type="button" data-w="834">Tablet</button>
+        <button type="button" data-w="390">Mobile</button>
       </div>
       <div class="title" id="frameTitle"></div>
     </div>
@@ -600,7 +600,7 @@
   ───────────────────────────────────────────────────────────────────────── */
   const PROJECTS = [
     {
-      id:'coaching', icon:'📹', tag:'Offer', name:'Coaching',
+      id:'coaching', icon:'', tag:'Offer', name:'Coaching',
       description:'Coaching is open at $125/week. VSL, who it is for, before/afters and the FAQ.',
       home:'https://julianhierro.github.io/trt-guy-coaching/',
       pages:[
@@ -622,7 +622,7 @@
       ]
     },
     {
-      id:'waitlist', icon:'📝', tag:'Offer', name:'Coaching Waitlist',
+      id:'waitlist', icon:'', tag:'Offer', name:'Coaching Waitlist',
       description:'Two-step waitlist then a qualifying application. Tags coaching-waitlist then coaching-application.',
       home:'https://trt-guy.com/waitlist/',
       pages:[
@@ -635,7 +635,7 @@
       ]
     },
     {
-      id:'coachingapp', icon:'🗒️', tag:'Application', name:'Coaching Application',
+      id:'coachingapp', icon:'', tag:'Application', name:'Coaching Application',
       description:'Standalone application to work with you — same questions as the waitlist, no waitlist step.',
       home:'https://trt-guy.com/coaching-application/',
       pages:[
@@ -648,7 +648,7 @@
       ]
     },
     {
-      id:'startpage', icon:'🚪', tag:'Hub', name:'TRT 101 + Coaching',
+      id:'startpage', icon:'', tag:'Hub', name:'TRT 101 + Coaching',
       description:'One page, two tabs — your TRT 101 opt-in and your coaching waitlist, each loaded as your real page.',
       home:'https://trt-guy.com/start/',
       pages:[
@@ -658,7 +658,7 @@
       ]
     },
     {
-      id:'protocol', icon:'💊', tag:'Draft', name:'My Current Protocol',
+      id:'protocol', icon:'', tag:'Draft', name:'My Current Protocol',
       description:'Your protocol page — compounds, supplements, training, notes. Editable in the browser; not linked anywhere yet.',
       home:'https://trt-guy.com/protocol/',
       pages:[
@@ -668,7 +668,7 @@
       ]
     },
     {
-      id:'onboarding', icon:'📋', tag:'Post-Purchase', name:'Client Onboarding',
+      id:'onboarding', icon:'', tag:'Post-Purchase', name:'Client Onboarding',
       description:'The full intake a new client completes right after they buy. Writes every answer onto their GHL contact.',
       home:'https://trt-guy.com/onboarding/',
       pages:[
@@ -678,7 +678,7 @@
       ]
     },
     {
-      id:'quiz', group:'magnets', icon:'🩺', tag:'Lead Magnet', name:'Low-T Quiz',
+      id:'quiz', group:'magnets', icon:'', tag:'Lead Magnet', name:'Low-T Quiz',
       description:'The 10-question ADAM screen. Email captured before the result.',
       home:'https://julianhierro.github.io/trt-guy-quiz/',
       pages:[
@@ -691,7 +691,7 @@
       ]
     },
     {
-      id:'injection', group:'magnets', icon:'💉', tag:'Lead Magnet', name:'TRT Injection Guide',
+      id:'injection', group:'magnets', icon:'', tag:'Lead Magnet', name:'TRT Injection Guide',
       description:'Opt-in page, then the 17-page guide and the dose calculator.',
       home:'https://julianhierro.github.io/trt-guy-injection-guide/',
       pages:[
@@ -708,7 +708,7 @@
       ]
     },
     {
-      id:'guide101', group:'magnets', icon:'📘', tag:'Lead Magnet', name:'The TRT 101 Guide',
+      id:'guide101', group:'magnets', icon:'', tag:'Lead Magnet', name:'The TRT 101 Guide',
       description:'Opt-in page, then the 17-page guide and the PDF download.',
       home:'https://trt-guy.com/trt-101-guide/get',
       pages:[
@@ -725,7 +725,7 @@
       ]
     },
     {
-      id:'fertility', group:'magnets', icon:'🧬', tag:'Lead Magnet', name:'Fertility Guide For Men',
+      id:'fertility', group:'magnets', icon:'', tag:'Lead Magnet', name:'Fertility Guide For Men',
       description:'Opt-in (email + first name), thank-you, and the guide delivered by email via GHL.',
       home:'https://trt-guy.com/fertility-guide/',
       pages:[
@@ -745,7 +745,7 @@
       ]
     },
     {
-      id:'rules', group:'magnets', icon:'📋', tag:'Lead Magnet', name:'5 TRT Non-Negotiables',
+      id:'rules', group:'magnets', icon:'', tag:'Lead Magnet', name:'5 TRT Non-Negotiables',
       description:'Single opt-in page. The guide itself goes out by email.',
       home:'https://julianhierro.github.io/trt-guy-trt-rules/',
       pages:[
@@ -758,7 +758,7 @@
       ]
     },
     {
-      id:'course', group:'magnets', icon:'✉️', tag:'Email Course', name:'30 Emails In 30 Days',
+      id:'course', group:'magnets', icon:'', tag:'Email Course', name:'30 Emails In 30 Days',
       description:'Opt-in page and the confirmation page for the free daily email course.',
       home:'https://julianhierro.github.io/trt-guy-30-days/',
       pages:[
@@ -771,7 +771,7 @@
       ]
     },
     {
-      id:'site', icon:'🏠', tag:'Hub', name:'Main Site',
+      id:'site', icon:'', tag:'Hub', name:'Main Site',
       description:'Two sections toggled from the nav — the free email course and the coaching sales page. Also hosts /api/submit.',
       home:'https://julianhierro.github.io/trt-guy-site/',
       pages:[
@@ -789,7 +789,7 @@
         subfolder; open one and you get its pages (opt-in, thank you, asset).
         A project with no group sits at the top level on its own. ── */
   const GROUPS = [
-    { id:'magnets', icon:'🧲', tag:'Folder', name:'Lead Magnets',
+    { id:'magnets', icon:'', tag:'Folder', name:'Lead Magnets',
       description:'Every free thing you give away. Each one opens into its own opt-in page and thank-you page.' }
   ];
   const groupOf = pr => pr.group ? GROUPS.find(g => g.id === pr.group) : null;
@@ -929,7 +929,7 @@
   ];
   function quickLinks(){
     return '<div class="card" style="grid-column:1/-1">'
-      + '<div class="name" style="margin:0 0 4px"><span>🔗</span> Quick links</div>'
+      + '<div class="name" style="margin:0 0 4px"> Quick links</div>'
       + '<p class="desc" style="margin:0 0 6px">The ones I send most — tap Copy and paste.</p>'
       + QUICK_LINKS.map(l =>
           '<div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line);flex-wrap:wrap">'
@@ -1223,7 +1223,7 @@
     fetch(RESET_API + '?t=reset&p=' + encodeURIComponent(key), { method:'POST' })
       .then(function(r){ return r.ok ? r.json() : null; })
       .then(function(d){
-        if (d && d.ok) { b.textContent = 'Reset ✓'; loadStats(); }
+        if (d && d.ok) { b.textContent = 'Reset '; loadStats(); }
         else { b.textContent = 'Failed'; }
         setTimeout(function(){ b.textContent = old; b.disabled = false; }, 1600);
       })
@@ -1237,7 +1237,7 @@
     var t = chip.dataset.tag;
     var done = function(){
       var old = chip.textContent;
-      chip.textContent = 'copied ✓'; chip.classList.add('copied');
+      chip.textContent = 'copied '; chip.classList.add('copied');
       setTimeout(function(){ chip.textContent = old; chip.classList.remove('copied'); }, 1100);
     };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, done);
@@ -1291,7 +1291,7 @@
     if (!items.length) return '';
     return '<div class="card" style="grid-column:1/-1">'
       + '<div class="actions" style="justify-content:space-between;align-items:center;margin:0">'
-        + '<div class="name" style="margin:0"><span>🗄️</span>Archived <span class="count">' + items.length + '</span></div>'
+        + '<div class="name" style="margin:0">Archived <span class="count">' + items.length + '</span></div>'
         + '<button type="button" class="btn ghost" id="archToggleBtn">' + (archShow ? 'Hide' : 'Show') + '</button>'
       + '</div>'
       + (archShow ? '<div style="margin-top:12px">' + items.map(it =>
@@ -1405,7 +1405,7 @@
         '<div class="bd"><div class="tx"></div>' +
           '<div class="mt"><span class="kd ' + it.kind + '">' + it.kind + '</span>' +
           '<span class="pi ' + PRI[p].cls + '">' + PRI[p].label + '</span>' +
-          ((it.notes || '').trim() ? '<span class="nt">📝 notes</span>' : '') + '</div>' +
+          ((it.notes || '').trim() ? '<span class="nt">notes</span>' : '') + '</div>' +
         '</div>' +
         '<button class="go" type="button" aria-label="Open">›</button></div>';
     });
@@ -1437,7 +1437,7 @@
     $detail.querySelectorAll('.d-kind button').forEach(b => b.classList.toggle('on', b.dataset.kind === it.kind));
     const dn = $detail.querySelector('#dDone');
     dn.classList.toggle('on', !!it.done);
-    dn.textContent = it.done ? '✓ Done' : 'Mark done';
+    dn.textContent = it.done ? 'Done' : 'Mark done';
     $detail.querySelector('.d-when').textContent =
       'Added ' + new Date(it.at).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'});
     todoGrow($detail.querySelector('.d-title'));
@@ -1860,7 +1860,7 @@
       inCall('action=contacts&q=' + encodeURIComponent(q)).then(r => {
         const hits = (r.ok && r.j.contacts) || [];
         if (!hits.length) { $cmHits.hidden = true; return; }
-        $cmHits.innerHTML = hits.map(() => '<div><b></b><span></span></div>').join('');
+        $cmHits.innerHTML = hits.map(() => '<div><b></b></div>').join('');
         // contact names come out of the CRM — set as text, never built into HTML
         const nodes = $cmHits.querySelectorAll('div');
         hits.forEach((c, i) => {
