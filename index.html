@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>TRT Guy — Control Center</title>
-<link rel="icon" href="favicon.ico" sizes="any">
-<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -658,23 +658,56 @@
       ]
     },
     {
-      id:'protocol', icon:'', tag:'Draft', name:'My Current Protocol',
-      description:'Your protocol page — compounds, supplements, training, notes. Editable in the browser; not linked anywhere yet.',
+      id:'pedhealth', icon:'', tag:'Post-Purchase', name:'PED / Health Assessment',
+      description:'The PED and health section on its own — for clients who completed onboarding before those questions were on the form.',
+      home:'https://trt-guy.com/ped-health/',
+      pages:[
+        { kind:'gate', key:'trtguy-ped-health', tags:["trt-guy", "client-onboarded", "ped-health"], name:'PED / Health Assessment',
+          description:'Nine PED and health questions plus bloodwork upload. Same wording as the main onboarding form.',
+          url:'https://trt-guy.com/ped-health/' }
+      ]
+    },
+    {
+      id:'biolink', icon:'', tag:'Instagram', name:'Bio Link',
+      description:'The link-in-bio page your Instagram profile points at. Edit the button wording in the browser.',
+      home:'https://trt-guy.com/links/',
+      pages:[
+        { kind:'asset', key:'trtguy-links', tags:[], name:'Bio Link Page',
+          description:'Your link-in-bio buttons. Rename a button or remove one; adding a brand new link still needs a URL set in the file.',
+          url:'https://trt-guy.com/links/' }
+      ]
+    },
+    {
+      id:'protocol', icon:'', tag:'Lead Magnet', name:'My Current Protocol',
+      description:'Your protocol page, gated behind a first name + email opt-in. Linked from your Instagram bio.',
       home:'https://trt-guy.com/protocol/',
       pages:[
-        { kind:'asset', key:'trtguy-protocol', tags:[], name:'My Current Protocol',
-          description:'What you are currently running. Edit it in the browser.',
+        { kind:'gate', key:'trtguy-protocol', tags:["trt-guy", "my-protocol"], name:'My Current Protocol',
+          description:'Name + email unlocks the protocol. Add ?edit=1 to edit it — the gate is skipped in edit mode.',
           url:'https://trt-guy.com/protocol/' }
       ]
     },
     {
       id:'onboarding', icon:'', tag:'Post-Purchase', name:'Client Onboarding',
-      description:'The full intake a new client completes right after they buy. Writes every answer onto their GHL contact.',
+      description:'The full onboarding questionnaire a new client completes right after they buy. Questions and the grey example text under each box are both editable.',
       home:'https://trt-guy.com/onboarding/',
       pages:[
-        { kind:'gate', key:'trtguy-onboarding', tags:["trt-guy", "client-onboarded"], name:'Onboarding Intake',
-          description:'The intake plus photo and bloodwork uploads. Writes answers and a note to the contact and emails you.',
-          url:'https://trt-guy.com/onboarding/' }
+        { kind:'gate', key:'trtguy-onboarding', tags:["trt-guy", "client-onboarded", "assessment-v2"], name:'Onboarding Questionnaire',
+          description:'Goals, nutrition, PEDs/health, training, lifestyle, plus photo and bloodwork uploads. Sends every answer to the contact note, your email and #onboarding-forms.',
+          url:'https://trt-guy.com/onboarding/' },
+        { kind:'thanks', key:'trtguy-onboarding-thanks', tags:[], name:'Thank You Page',
+          description:'Where clients land the moment they submit the questionnaire.',
+          url:'https://trt-guy.com/onboarding/thanks/' }
+      ]
+    },
+    {
+      id:'clients', icon:'', tag:'Internal', name:'Client Manager',
+      description:'Your private client roster — add clients with start/end dates, payment type and status, and generate each one a personal plan page. Passcode-gated; a tool for you, not a public funnel.',
+      home:'https://trt-guy.com/clients/',
+      pages:[
+        { kind:'asset', key:'trtguy-clients', tags:[], name:'Client Manager',
+          description:'Add and manage clients and their plan pages. Behind a passcode — opens the tool itself, not an editor.',
+          url:'https://trt-guy.com/clients/' }
       ]
     },
     {
@@ -922,8 +955,10 @@
   const QUICK_LINKS = [
     { name:'Main site',           url:'https://trt-guy.com' },
     { name:'Client Manager',      url:'https://trt-guy.com/clients/' },
+    { name:'Bio link (Instagram)', url:'https://trt-guy.com/links/' },
     { name:'TRT 101 — Opt-in',    url:'https://trt-guy.com/trt-101-guide/get/' },
     { name:'Coaching Application', url:'https://trt-guy.com/coaching-application/' },
+    { name:'Client Onboarding',   url:'https://trt-guy.com/onboarding/' },
     { name:'Coaching Waitlist',   url:'https://trt-guy.com/waitlist/' },
     { name:'My Current Protocol', url:'https://trt-guy.com/protocol/' }
   ];
@@ -1202,14 +1237,35 @@
       b.classList.add('copied');
       setTimeout(function(){ b.textContent = old; b.classList.remove('copied'); }, 1200);
     };
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(url).then(function(){ done(true); }, function(){ done(false); });
-    } else {
-      var ta = document.createElement('textarea'); ta.value = url; document.body.appendChild(ta);
-      ta.select(); var ok = false; try { ok = document.execCommand('copy'); } catch (x) {}
-      document.body.removeChild(ta); done(ok);
-    }
+    copyText(url, done);
   });
+
+  // The async clipboard API is blocked in plenty of real situations — an unfocused
+  // document, an in-app browser, denied permission. Fall through to the old
+  // execCommand trick, and only then give up and show the text to copy by hand.
+  function legacyCopy(text){
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;border:0;padding:0';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    try { ta.setSelectionRange(0, text.length); } catch (x) {}
+    var ok = false; try { ok = document.execCommand('copy'); } catch (x) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+  function copyText(text, done){
+    try { window.focus(); } catch (x) {}
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(
+        function(){ done(true); },
+        function(){ if (legacyCopy(text)) done(true); else { done(false); window.prompt('Copy this link:', text); } }
+      );
+      return;
+    }
+    if (legacyCopy(text)) done(true);
+    else { done(false); window.prompt('Copy this link:', text); }
+  }
 
   // reset a single page's counters (views/visitors/opt-ins). Revenue is left intact.
   // Origin-guarded server-side; here we also require a typed confirmation before firing.
@@ -1240,12 +1296,7 @@
       chip.textContent = 'copied '; chip.classList.add('copied');
       setTimeout(function(){ chip.textContent = old; chip.classList.remove('copied'); }, 1100);
     };
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, done);
-    else {
-      var ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta);
-      ta.select(); try { document.execCommand('copy'); } catch (x) {}
-      document.body.removeChild(ta); done();
-    }
+    copyText(t, done);
   });
 
   /* ── Archive ──────────────────────────────────────────────────────────────
