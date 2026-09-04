@@ -682,8 +682,11 @@
       description:'Your protocol page, gated behind a first name + email opt-in. Linked from your Instagram bio.',
       home:'https://trt-guy.com/protocol/',
       pages:[
-        { kind:'gate', key:'trtguy-protocol', tags:["trt-guy", "my-protocol"], name:'My Current Protocol',
-          description:'Name + email unlocks the protocol. Add ?edit=1 to edit it — the gate is skipped in edit mode.',
+        { kind:'gate', key:'trtguy-protocol', tags:["trt-guy", "my-protocol"], name:'Opt-In Page',
+          description:'The first name + email gate people see. Opens ready to edit the opt-in copy — click the headline, subtext, button or fine print and type. Tags my-protocol in GHL.',
+          url:'https://trt-guy.com/protocol/', editSrc:'https://trt-guy.com/protocol/?optin=1' },
+        { kind:'asset', key:'', tags:[], name:'The Protocol (behind the gate)',
+          description:'What unlocks after opt-in — your compounds, supplements, training and notes. Opens straight into edit mode.',
           url:'https://trt-guy.com/protocol/' }
       ]
     },
@@ -851,7 +854,9 @@
       // the editor simply never opened on that page.
       // editHost lets a card be VIEWED on its live host but EDITED on another copy
       // of the same files (same content store, so publishing still updates live).
-      const base = p.editHost ? p.url.replace(/^https?:\/\/[^/]+/, p.editHost) : p.url;
+      // editSrc lets a card keep a clean public `url` (used for View / copy-link) while
+      // its editor opens a different URL — e.g. the protocol opt-in, edited via ?optin=1.
+      const base = p.editSrc ? p.editSrc : (p.editHost ? p.url.replace(/^https?:\/\/[^/]+/, p.editHost) : p.url);
       p.editUrl = base + (base.indexOf('?') === -1 ? '?' : '&') + 'edit=1&cc=' + encodeURIComponent(CC);
     });
   }
