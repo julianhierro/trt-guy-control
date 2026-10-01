@@ -958,28 +958,140 @@
         + (cv == null ? '—' : cv.toFixed(1) + '%') + '</div></div>';
   }
 
-  // Quick links — the handful I send people most, with one-click copy (reuses the .btn.copy handler).
-  const QUICK_LINKS = [
+  /* Quick links — the handful I send people most, with one-click copy (reuses the
+     .btn.copy handler). The list is editable right here: hit Edit to rename one,
+     point it somewhere else, drop what you no longer send, or add a new one.
+     Saved to the same content store the to-do list and the archive use (site key
+     td-quicklinks), so an edit on the laptop shows up on the phone. */
+  const QL_DEFAULTS = [
     { name:'Main site',           url:'https://trt-guy.com' },
     { name:'Client Manager',      url:'https://trt-guy.com/clients/' },
     { name:'Bio link (Instagram)', url:'https://trt-guy.com/links/' },
     { name:'TRT 101 — Opt-in',    url:'https://trt-guy.com/trt-101-guide/get/' },
+    { name:'Coaching page',       url:'https://trt-guy.com/coaching/' },
     { name:'Coaching Application', url:'https://trt-guy.com/coaching-application/' },
     { name:'Client Onboarding',   url:'https://trt-guy.com/onboarding/' },
     { name:'Coaching Waitlist',   url:'https://trt-guy.com/waitlist/' },
     { name:'My Current Protocol', url:'https://trt-guy.com/protocol/' }
   ];
+  const QL_API   = 'https://jv-dashboard-chi.vercel.app/api/content?site=td-quicklinks&page=1';
+  const QL_LOCAL = 'trtguy-quicklinks';
+  let ql = { links: QL_DEFAULTS.slice(), updatedAt: 0 };
+  let qlEdit = false, qlPushing = false, qlDirty = false;
+
+  const qesc = v => String(v == null ? '' : v)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  // a link typed without the scheme still has to work when you tap it
+  function qlTidy(u){ u = String(u || '').trim(); if (!u) return ''; return /^https?:\/\//i.test(u) ? u : 'https://' + u.replace(/^\/+/, ''); }
+
+  function qlLoadLocal(){
+    try { const v = JSON.parse(localStorage.getItem(QL_LOCAL) || 'null'); if (v && Array.isArray(v.links)) ql = v; } catch (e) {}
+  }
+  function qlSave(){
+    ql.updatedAt = Date.now();
+    try { localStorage.setItem(QL_LOCAL, JSON.stringify(ql)); } catch (e) {}
+    rerenderCurrent();
+    qlPush();
+  }
+  // edits arrive in bursts (type a name, tab, type a URL), so a change made while a
+  // push is still in flight has to be sent after it, not dropped
+  function qlPush(){
+    if (qlPushing) { qlDirty = true; return; }
+    qlPushing = true; qlDirty = false;
+    fetch(QL_API, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ password:'', edits:[{ eid:'quicklinks', html: JSON.stringify(ql) }] }) })
+      .catch(() => {}).then(() => { qlPushing = false; if (qlDirty) qlPush(); });
+  }
+  function qlPull(){
+    fetch(QL_API + '&t=' + Date.now(), { cache:'no-store' })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        const rec = d && Array.isArray(d.edits) && d.edits.find(e => e.eid === 'quicklinks');
+        if (!rec || !rec.html) return;
+        try { const v = JSON.parse(rec.html);
+          if (v && Array.isArray(v.links) && (v.updatedAt || 0) >= (ql.updatedAt || 0)) {
+            ql = v; try { localStorage.setItem(QL_LOCAL, JSON.stringify(ql)); } catch (e) {}
+            rerenderCurrent();
+          } } catch (e) {}
+      }).catch(() => {});
+  }
+
+  const QL_ROW = 'display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line);flex-wrap:wrap';
+  const QL_INP = 'font:inherit;font-size:13px;color:var(--fg);background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:9px 11px';
+
   function quickLinks(){
-    return '<div class="card" style="grid-column:1/-1">'
-      + '<div class="name" style="margin:0 0 4px"> Quick links</div>'
-      + '<p class="desc" style="margin:0 0 6px">The ones I send most — tap Copy and paste.</p>'
-      + QUICK_LINKS.map(l =>
-          '<div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line);flex-wrap:wrap">'
-          + '<span style="font-weight:700;min-width:168px">' + l.name + '</span>'
-          + '<a href="' + l.url + '" target="_blank" rel="noopener" style="flex:1;min-width:150px;color:var(--muted);font-size:13px;text-decoration:none;word-break:break-all">' + l.url.replace(/^https:\/\//, '') + '</a>'
-          + '<button type="button" class="btn ghost copy" data-copy="' + l.url + '">Copy ⧉</button>'
-          + '</div>').join('')
+    const rows = ql.links.map((l, i) => qlEdit
+      ? '<div style="' + QL_ROW + '">'
+        + '<input data-qlname="' + i + '" value="' + qesc(l.name) + '" placeholder="Name" style="' + QL_INP + ';flex:1;min-width:140px;font-weight:700">'
+        + '<input data-qlurl="' + i + '" value="' + qesc(l.url) + '" placeholder="https://…" style="' + QL_INP + ';flex:2;min-width:180px">'
+        + '<button type="button" class="btn ghost" data-qldel="' + i + '">Remove</button>'
+        + '</div>'
+      : '<div style="' + QL_ROW + '">'
+        + '<span style="font-weight:700;min-width:168px">' + qesc(l.name) + '</span>'
+        + '<a href="' + qesc(l.url) + '" target="_blank" rel="noopener" style="flex:1;min-width:150px;color:var(--muted);font-size:13px;text-decoration:none;word-break:break-all">' + qesc(l.url.replace(/^https:\/\//, '')) + '</a>'
+        + '<button type="button" class="btn ghost copy" data-copy="' + qesc(l.url) + '">Copy ⧉</button>'
+        + '</div>').join('');
+
+    const adder = !qlEdit ? '' :
+      '<div style="' + QL_ROW + ';border-top:1px dashed var(--line-bright)">'
+      + '<input id="qlNewName" placeholder="Name" style="' + QL_INP + ';flex:1;min-width:140px;font-weight:700">'
+      + '<input id="qlNewUrl" placeholder="trt-guy.com/…" style="' + QL_INP + ';flex:2;min-width:180px">'
+      + '<button type="button" class="btn" id="qlAdd">Add link</button>'
       + '</div>';
+
+    return '<div class="card" style="grid-column:1/-1">'
+      + '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">'
+        + '<div class="name" style="margin:0 0 4px"> Quick links</div>'
+        + '<button type="button" class="btn ghost" id="qlEditBtn" style="margin-left:auto">' + (qlEdit ? 'Done' : 'Edit') + '</button>'
+      + '</div>'
+      + '<p class="desc" style="margin:0 0 6px">'
+        + (qlEdit ? 'Rename one, point it somewhere else, remove what you don\u2019t send any more, or add a new one.'
+                  : 'The ones I send most — tap Copy and paste.') + '</p>'
+      + rows + adder
+      + (qlEdit ? '<div style="padding-top:12px;border-top:1px solid var(--line)"><button type="button" class="btn ghost" id="qlReset" title="Put the original eight back">Reset to defaults</button></div>' : '')
+      + '</div>';
+  }
+
+  function wireQuick(){
+    const eb = document.getElementById('qlEditBtn');
+    if (eb) eb.addEventListener('click', () => { qlEdit = !qlEdit; renderFolders(); });
+
+    document.querySelectorAll('[data-qldel]').forEach(b => b.addEventListener('click', () => {
+      const i = +b.dataset.qldel, l = ql.links[i];
+      if (!l || !confirm('Remove \u201c' + l.name + '\u201d from quick links?')) return;
+      ql.links.splice(i, 1); qlSave();
+    }));
+    // save on blur, not on every keystroke — a re-render mid-typing would steal focus
+    document.querySelectorAll('[data-qlname]').forEach(inp => inp.addEventListener('change', () => {
+      const l = ql.links[+inp.dataset.qlname]; if (!l) return;
+      const v = inp.value.trim(); if (!v || v === l.name) return;
+      l.name = v; qlSave();
+    }));
+    document.querySelectorAll('[data-qlurl]').forEach(inp => inp.addEventListener('change', () => {
+      const l = ql.links[+inp.dataset.qlurl]; if (!l) return;
+      const v = qlTidy(inp.value); if (!v || v === l.url) return;
+      l.url = v; qlSave();
+    }));
+
+    const add = document.getElementById('qlAdd');
+    if (add) {
+      const doAdd = () => {
+        const n = document.getElementById('qlNewName'), u = document.getElementById('qlNewUrl');
+        const name = n.value.trim(), url = qlTidy(u.value);
+        if (!name) return n.focus();
+        if (!url) return u.focus();
+        ql.links.push({ name: name, url: url }); qlSave();
+      };
+      add.addEventListener('click', doAdd);
+      ['qlNewName','qlNewUrl'].forEach(id => document.getElementById(id)
+        .addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); doAdd(); } }));
+    }
+
+    const rs = document.getElementById('qlReset');
+    if (rs) rs.addEventListener('click', () => {
+      if (!confirm('Put the original list of quick links back?')) return;
+      ql.links = QL_DEFAULTS.slice(); qlSave();
+    });
   }
 
   function renderFolders(){
@@ -1018,6 +1130,7 @@
       c.addEventListener('click', e => { if (e.target.closest('a')) return; showProject(c.dataset.project); });
     });
     wireArch();
+    wireQuick();
   }
 
   function projectCard(pr){
@@ -1966,6 +2079,7 @@
   paintBaseline();
   paintMe();
   archLoadLocal();
+  qlLoadLocal();
   const deepP = location.hash.match(/^#p\/(.+)$/);
   const deepG = location.hash.match(/^#g\/(.+)$/);
   if (deepP) showProject(deepP[1], true);
@@ -1973,7 +2087,9 @@
   else renderFolders();
   loadStats();
   archPull();
+  qlPull();
   window.addEventListener('focus', archPull);
+  window.addEventListener('focus', qlPull);
 </script>
 
 </body>
