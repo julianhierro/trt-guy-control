@@ -603,24 +603,18 @@
   const PROJECTS = [
     {
       id:'coaching', icon:'', tag:'Offer', name:'Coaching',
-      description:'Coaching is open at $125/week. VSL, who it is for, before/afters and the FAQ.',
-      home:'https://julianhierro.github.io/trt-guy-coaching/sales.html',
+      description:'What the coaching involves, the application, and the confirmation page.',
+      home:'https://trt-guy.com/coaching/',
       pages:[
-        { kind:'gate',  key:'trtdad-coaching-gate', tags:["trt-dad", "coaching-interest"], name:'Sales Page',
-          description:'The one coaching page: VSL, what\'s included, who it\'s for and who it isn\'t, 19 before/afters, $125/week and the FAQ. Start Now opens the email pop-up, then the order form.',
-          url:'https://julianhierro.github.io/trt-guy-coaching/sales.html' },
-        { kind:'asset', key:'trtdad-pillars', tags:[], name:'Four Pillars (draft)',
-          description:'The four things every plan aims at. Draft — not linked from the sales page yet, and pillar 4 is a suggestion.',
-          url:'https://julianhierro.github.io/trt-guy-coaching/pillars.html' },
-        { kind:'gate', key:'trtdad-checkout', tags:["trt-dad", "coaching-client"], name:'Checkout',
-          description:'Offer summary, price and guarantee, with your GoHighLevel Payment form in a pop-up. Conversion here = visitors who opened the payment form.',
-          url:'https://julianhierro.github.io/trt-guy-coaching/pay.html' },
-        { kind:'gate', key:'trtdad-checkout-paid', tags:[], name:'After payment',
-          description:'Everyone who lands here has paid, so this card counts completed sales. Paste your intake-form URL into NEXT_STEP.url to make it forward automatically.',
-          url:'https://julianhierro.github.io/trt-guy-coaching/thanks.html' },
-        { kind:'gate', key:'trtdad-site', tags:["trt-dad", "coaching-interest"], name:'Coaching tab (main site)',
-          description:'The coaching half of the two-tab main site. Cross-listed here because it is coaching — it lives in the Main Site project and shares that project\'s stats.',
-          url:'https://julianhierro.github.io/trt-guy-site/', editHost:'https://julianhierro.github.io/trt-guy-site' }
+        { kind:'asset', key:'trtguy-coaching', tags:[], name:'Coaching page',
+          description:'The four pillars, what is included, the transformations, and the button through to the application. This is the link in the bio and the one to send people.',
+          url:'https://trt-guy.com/coaching/' },
+        { kind:'gate', key:'trtguy-coaching-app', tags:["trt-guy", "coaching-application"], name:'Application',
+          description:'The qualifying questions. On submit the answers land in GoHighLevel and the applicant goes straight to the booking calendar.',
+          url:'https://trt-guy.com/coaching-application/' },
+        { kind:'asset', key:'trtguy-waitlist-thanks', tags:[], name:'Thank you',
+          description:'Application Received. Nothing routes here at the moment — the application sends people to the booking calendar instead — so expect this card to stay quiet.',
+          url:'https://trt-guy.com/waitlist/thanks/' }
       ]
     },
     {
